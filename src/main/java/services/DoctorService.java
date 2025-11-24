@@ -6,29 +6,9 @@ import utils.UIUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static pojos.DoctorSpecialty.*;
+
 public class DoctorService {
-
-    public User loginUser(DoctorConnection conn) {
-
-        System.out.println("\nLOGIN DOCTOR");
-        String username = UIUtils.readString("Username: ");
-        String password = UIUtils.readString("Password: ");
-
-        conn.sendCommand("LOGIN_USER|" + username + "|" + password);
-        String response = conn.receiveResponse();
-
-        if (response == null) return null;
-
-        if (response.startsWith("OK|")) {
-            String[] p = response.split("\\|");
-            int userId = Integer.parseInt(p[1]);
-            String uname = p[2];
-            return new User(userId, uname, password);
-        }
-
-        System.out.println("Login failed: " + response);
-        return null;
-    }
 
     public int getDoctorId(DoctorConnection conn, int userId) {
 
@@ -112,6 +92,113 @@ public class DoctorService {
 
         return ids;
     }
+
+    public User registerUser(DoctorConnection conn) {
+        System.out.println("\nREGISTER USER");
+
+        String username = UIUtils.readString("New username: ");
+        String password = UIUtils.readString("New password: ");
+
+        String cmd = "REGISTER_USER|" + username + "|" + password;
+        conn.sendCommand(cmd);
+
+        String response = conn.receiveResponse();
+        if (response == null) {
+            System.out.println("No server response");
+            return null;
+        }
+
+        if (response.startsWith("OK|")) {
+            int id = Integer.parseInt(response.split("\\|")[1]);
+            System.out.println("User created. ID = " + id);
+            return new User(id, username, password);
+        }
+
+        System.out.println("Registration failed: " + response);
+        return null;
+    }
+
+    public void createDoctorForUser(User user, DoctorConnection conn) {
+        System.out.println("\nCREATE DOCTOR PROFILE");
+
+        String name = UIUtils.readString("Name: ");
+        String surname = UIUtils.readString("Surname: ");
+        String email = UIUtils.readString("Email: ");
+
+        System.out.println("Specialty:");
+        System.out.println("1. CARDIOLOGIST");
+        System.out.println("2. RHEUMATOLOGIST");
+        System.out.println("3. PNEUMATOLOGIST");
+
+        int s = UIUtils.readInt("Choose: ");
+        String specialty;
+        switch (s) {
+            case 1:
+                specialty = "CARDIOLOGIST";
+                break;
+            case 2:
+                specialty = "RHEUMATOLOGIST";
+                break;
+            case 3:
+                specialty = "PNEUMATOLOGIST";
+                break;
+            default:
+                System.out.println("Invalid option. Defaulting to GENERAL_MEDICINE.");
+                specialty = "GENERAL_MEDICINE";
+                break;
+        };
+
+        String cmd = "CREATE_DOCTOR|" +
+                user.getId() + "|" +
+                name + "|" +
+                surname + "|" +
+                specialty + "|" +
+                email;
+
+        conn.sendCommand(cmd);
+
+        String response = conn.receiveResponse();
+        if (response == null) {
+            System.out.println("Server not responding.");
+            return;
+        }
+
+        if (response.startsWith("OK|")) {
+            System.out.println("Doctor profile created successfully.");
+            return;
+        }
+
+        System.out.println("Error creating doctor: " + response);
+    }
+
+    public User loginUser(DoctorConnection conn) {
+        System.out.println("\nLOGIN USER");
+
+        String username = UIUtils.readString("Username: ");
+        String password = UIUtils.readString("Password: ");
+
+        String cmd = "LOGIN_USER|" + username + "|" + password;
+        conn.sendCommand(cmd);
+
+        String response = conn.receiveResponse();
+        if (response == null) {
+            System.out.println("No response from server.");
+            return null;
+        }
+
+        if (response.startsWith("OK|")) {
+            String[] parts = response.split("\\|");
+            int id = Integer.parseInt(parts[1]);
+            String uname = parts[2];
+            return new User(id, uname, password);
+        }
+
+        System.out.println("User login failed: " + response);
+        return null;
+    }
+
+
+
 
 }
 
