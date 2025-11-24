@@ -1,13 +1,7 @@
-package Network;
-
-import Network.ReceiveDataViaNetwork;
-import Network.SendDataViaNetwork;
-import utils.UIUtils;
+package network;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DoctorConnection {
 

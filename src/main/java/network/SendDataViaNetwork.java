@@ -1,4 +1,4 @@
-package Network;
+package network;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

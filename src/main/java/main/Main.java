@@ -1,8 +1,8 @@
-package Main;
+package main;
 
 
-import Network.DoctorConnection;
-import Services.DoctorService;
+import network.DoctorConnection;
+import services.DoctorService;
 import pojos.User;
 
 public class Main {

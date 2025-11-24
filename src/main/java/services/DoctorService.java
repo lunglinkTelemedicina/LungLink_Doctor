@@ -1,6 +1,6 @@
-package Services;
+package services;
 import pojos.*;
-import Network.DoctorConnection;
+import network.DoctorConnection;
 import utils.UIUtils;
 
 import java.util.ArrayList;

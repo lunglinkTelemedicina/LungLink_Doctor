@@ -1,8 +1,7 @@
-package Main;
+package main;
 
-import Network.DoctorConnection;
-import Services.DoctorService;
-import pojos.ClientView;
+import network.DoctorConnection;
+import services.DoctorService;
 import utils.UIUtils;
 
 import java.util.List;
