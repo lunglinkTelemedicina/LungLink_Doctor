@@ -3,10 +3,10 @@ import pojos.*;
 import network.DoctorConnection;
 import utils.UIUtils;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static pojos.DoctorSpecialty.*;
 
 public class DoctorService {
 
@@ -118,7 +118,7 @@ public class DoctorService {
         return null;
     }
 
-    public void createDoctorForUser(User user, DoctorConnection conn) {
+    public Doctor createDoctorForUser(User user, DoctorConnection conn) throws IOException {
         System.out.println("\nCREATE DOCTOR PROFILE");
 
         String name = UIUtils.readString("Name: ");
@@ -130,7 +130,7 @@ public class DoctorService {
         System.out.println("2. RHEUMATOLOGIST");
         System.out.println("3. PNEUMATOLOGIST");
 
-        int s = UIUtils.readInt("Choose: ");
+        int s = UIUtils.readInt("Choose by typing the number: ");
         String specialty;
         switch (s) {
             case 1:
@@ -159,16 +159,30 @@ public class DoctorService {
 
         String response = conn.receiveResponse();
         if (response == null) {
-            System.out.println("Server not responding.");
-            return;
+            throw new IOException("Server not responding during creation");
         }
 
         if (response.startsWith("OK|")) {
-            System.out.println("Doctor profile created successfully.");
-            return;
-        }
+            try {
+                String[]parts = response.split("\\|");
+                int doctorId = Integer.parseInt(parts[1]);
 
-        System.out.println("Error creating doctor: " + response);
+                Doctor d = new Doctor();
+                d.setDoctorId(doctorId);
+                d.setName(name);
+                d.setSurname(surname);
+                d.setEmail(email);
+                d.setSpecialty(DoctorSpecialty.valueOf(specialty));
+                d.setUserId(user.getId());
+
+                System.out.println("Doctor profile created. ID = " + doctorId);
+
+                return d;
+        }catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new IOException("Invalid server response format during creation: " + response + ". " + e.getMessage(), e);
+        }
+    }
+        throw new IOException("Error creating profile:" + response);
     }
 
     public User loginUser(DoctorConnection conn) {

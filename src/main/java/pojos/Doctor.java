@@ -9,14 +9,20 @@ public class Doctor {
     private String email;
     private DoctorSpecialty specialty;
     private List<Client> patients;
+    private int userId;
 
 
-    public Doctor(String name,String surname, DoctorSpecialty specialty,String email, int doctorId ) {
+    public Doctor(String name,String surname, DoctorSpecialty specialty,String email, int doctorId, int userId ) {
         this.name = name;
         this.surname=surname;
         this.specialty = specialty;
         this.email=email;
         this.doctorId = doctorId;
+        this.userId = userId;
+    }
+
+    public Doctor() {
+
     }
 
     public int getDoctorId() {
@@ -65,6 +71,14 @@ public class Doctor {
 
     public void setPatients(List<Client> patients) {
         this.patients = patients;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     @Override

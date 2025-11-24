@@ -1,6 +1,7 @@
 package main;
 
 import network.DoctorConnection;
+import pojos.Doctor;
 import services.DoctorService;
 import utils.UIUtils;
 
@@ -10,12 +11,12 @@ public class DoctorMenu {
 
     private final DoctorConnection conn;
     private final DoctorService service;
-    private final int doctorId;
+    private final Doctor doctor;
 
-    public DoctorMenu(DoctorConnection conn, int doctorId) {
+    public DoctorMenu(DoctorConnection conn, Doctor doctor) {
         this.conn = conn;
         this.service = new DoctorService();
-        this.doctorId = doctorId;
+        this.doctor = doctor;
     }
 
     public void displayMenu() {
@@ -57,7 +58,7 @@ public class DoctorMenu {
 
     private void viewPatients() {
 
-        List<String> patients = service.getDoctorPatients(conn, doctorId);
+        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
 
         if (patients.isEmpty()) {
             System.out.println("No patients assigned.");
