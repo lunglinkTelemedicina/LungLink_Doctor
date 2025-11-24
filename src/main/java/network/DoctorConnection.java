@@ -5,7 +5,6 @@ import java.net.Socket;
 
 public class DoctorConnection {
 
-
     private Socket socket;
     private DataOutputStream dataOut;
     private DataInputStream dataIn;
@@ -40,6 +39,7 @@ public class DoctorConnection {
                 System.out.println("Server is shutting down. Closing doctor client...");
                 releaseResources();
                 System.exit(0);
+                //return "SERVER_SHUTDOWN";
             }
 
             return reply;
@@ -48,8 +48,9 @@ public class DoctorConnection {
             System.out.println("Lost connection to server. Exiting doctor client.");
             releaseResources();
             System.exit(0);
-            return null;
+            //return "CONNECTION_LOST";
         }
+        return null;
     }
 
     public void sendBytes(byte[] data){

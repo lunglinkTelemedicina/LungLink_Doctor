@@ -7,7 +7,7 @@ public class MedicalHistory {
 
     private int recordId;
     private LocalDate date;
-    private String observations;
+    private List <String> observations;
     private List<String> symptomsList;
     private int clientId;
     private int doctorId;
@@ -16,7 +16,7 @@ public class MedicalHistory {
         //constructor vacio
     }
 
-    public MedicalHistory(int recordId, LocalDate date, String observations, List<String> symptomsList, int clientId,  int doctorId) {
+    public MedicalHistory(int recordId, LocalDate date, List <String> observations, List<String> symptomsList, int clientId,  int doctorId) {
         this.recordId = recordId;
         this.date = date;
         this.observations = observations;
@@ -49,11 +49,9 @@ public class MedicalHistory {
         this.clientId = clientId;
     }
 
-    public String getObservations() {
-        return observations;
-    }
+    public List<String> getObservations() { return observations;}
 
-    public void setObservations(String observations) {
+    public void setObservations(List<String> observations) {
         this.observations = observations;
     }
 

@@ -8,7 +8,6 @@ import java.util.List;
 
 public class DoctorMenu {
 
-
     private final DoctorConnection conn;
     private final DoctorService service;
     private final int doctorId;
@@ -95,7 +94,6 @@ public class DoctorMenu {
     }
 
     private void addObservation() {
-
 
         viewPatients();
         int clientId = UIUtils.readInt("\nEnter patient ID to annotate: ");
