@@ -5,6 +5,10 @@ import pojos.Doctor;
 import services.DoctorService;
 import utils.UIUtils;
 
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 
 public class DoctorMenu {
@@ -87,12 +91,39 @@ public class DoctorMenu {
         System.out.println(result);
     }
 
+//    private void viewSignals() {
+//        viewPatients();
+//        int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
+//        String result = service.getPatientSignals(conn, clientId);
+//        System.out.println(result);
+//    }
+
     private void viewSignals() {
+
         viewPatients();
         int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
         String result = service.getPatientSignals(conn, clientId);
         System.out.println(result);
+
+        int signalId = UIUtils.readInt("\nEnter SIGNAL_ID to download/open: ");
+
+        File f = conn.requestSignalFile(signalId);
+
+        if (f == null) {
+            System.out.println("Could not download file.");
+            return;
+        }
+
+        System.out.println("File downloaded at: " + f.getAbsolutePath());
+
+        try {
+            Desktop.getDesktop().open(f);
+        } catch (Exception e) {
+            System.out.println("Could not open file automatically: " + e.getMessage());
+        }
     }
+
+
 
     private void addObservation() {
 

@@ -17,7 +17,7 @@ public class Main {
         DoctorConnection conn = new DoctorConnection();
         DoctorService service = new DoctorService();
 
-        if (!conn.connect("10.60.100.253", 9000)) {
+        if (!conn.connect("localhost", 9000)) {
             System.out.println("Cannot connect to server.");
             return;
         }

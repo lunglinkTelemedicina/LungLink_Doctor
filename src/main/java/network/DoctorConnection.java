@@ -2,6 +2,7 @@ package network;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 
 public class DoctorConnection {
 
@@ -85,4 +86,53 @@ public class DoctorConnection {
             if (socket != null) socket.close();
         } catch (IOException ignored) {}
     }
+
+    public File requestSignalFile(int signalId) {
+        try {
+            sendCommand("GET_SIGNAL_FILE|" + signalId);
+
+            String resp = receiveResponse();
+
+            if (!resp.startsWith("OK|SENDING_FILE|")) {
+                System.out.println("Server error: " + resp);
+                return null;
+            }
+
+            int size = Integer.parseInt(resp.split("\\|")[2]);
+
+            byte[] data = receiveBytesSignal(size);
+
+            File temp = File.createTempFile("signal_", ".csv");
+            Files.write(temp.toPath(), data);
+
+            return temp;
+
+        } catch (Exception e) {
+            System.out.println("Error receiving file: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public byte[] receiveBytesSignal(int size) {
+        try {
+            byte[] buffer = new byte[size];
+            int totalRead = 0;
+
+            while (totalRead < size) {
+                int bytesRead = dataIn.read(buffer, totalRead, size - totalRead);
+                if (bytesRead == -1) {
+                    throw new IOException("Connection closed while receiving file bytes");
+                }
+                totalRead += bytesRead;
+            }
+
+            return buffer;
+
+        } catch (Exception e) {
+            System.out.println("Error receiving bytes: " + e.getMessage());
+            return null;
+        }
+    }
+
+
 }
