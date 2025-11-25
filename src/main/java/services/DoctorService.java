@@ -61,7 +61,7 @@ public class DoctorService {
 
     public void addObservation(DoctorConnection conn, int recordId, String note) {
 
-        conn.sendCommand("ADD_DOCTOR_NOTE|" + recordId + "|" + note);
+        conn.sendCommand("ADD_OBSERVATIONS|" + recordId + "|" + note);
         String response = conn.receiveResponse();
 
         if (response != null) {

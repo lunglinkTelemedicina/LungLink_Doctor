@@ -97,7 +97,7 @@ public class DoctorMenu {
     private void addObservation() {
 
         viewPatients();
-        int clientId = UIUtils.readInt("\nEnter patient ID to annotate: ");
+        int clientId = UIUtils.readInt("\nEnter patient ID to observe: ");
         List<Integer> recordIds = service.getRecordIdsOfPatient(conn, clientId);
 
         if (recordIds.isEmpty()) {
@@ -106,11 +106,12 @@ public class DoctorMenu {
         }
 
         System.out.println("\nAvailable medical histories for this patient:");
-        for (int r : recordIds) {
-            System.out.println(" - " + r);
-        }
+//        for (int r : recordIds) {
+//            System.out.println(" ID: " + r);
+//        }
+        viewHistory();
 
-        int recordId = UIUtils.readInt("\nChoose the record you want to see (type its id): ");
+        int recordId = UIUtils.readInt("\nType the id in which you want to make any observation: ");
 
         if (!recordIds.contains(recordId)) {
             System.out.println("Invalid RECORD_ID.");
