@@ -25,10 +25,10 @@ public class DoctorMenu {
 
         while (!exit) {
             System.out.println("\nDOCTOR MENU\n");
-            System.out.println("1. View my patients\n");
-            System.out.println("2. View patient history\n");
-            System.out.println("3. View patient signals\n");
-            System.out.println("4. Add observation\n");
+            System.out.println("1. View my patients");
+            System.out.println("2. View patient history");
+            System.out.println("3. View patient signals");
+            System.out.println("4. Add observation");
             System.out.println("5. Disconnect\n");
 
             int opt = UIUtils.readInt("Choose option: ");
@@ -106,12 +106,11 @@ public class DoctorMenu {
         }
 
         System.out.println("\nAvailable medical histories for this patient:");
-//        for (int r : recordIds) {
-//            System.out.println(" ID: " + r);
-//        }
-        viewHistory();
+        for (int r : recordIds) {
+            System.out.println("RECORD_ID: " + r);
+        }
 
-        int recordId = UIUtils.readInt("\nType the id in which you want to make any observation: ");
+        int recordId = UIUtils.readInt("\nType the RECORD_ID in which you want to make any observation: ");
 
         if (!recordIds.contains(recordId)) {
             System.out.println("Invalid RECORD_ID.");
@@ -120,5 +119,7 @@ public class DoctorMenu {
 
         String observation = UIUtils.readString("Observation to add: ");
         service.addObservation(conn, recordId, observation);
+
+        System.out.println("Observation added successfully.");
     }
 }
