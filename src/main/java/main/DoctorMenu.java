@@ -9,6 +9,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorMenu {
@@ -116,12 +117,66 @@ public class DoctorMenu {
 
         System.out.println("File downloaded at: " + f.getAbsolutePath());
 
-        try {
-            Desktop.getDesktop().open(f);
+//        try { //TODO PARA Q SE ABRA EN EXCEL O EN EDITOR D TEXTO
+//            Desktop.getDesktop().open(f);
+//        } catch (Exception e) {
+//            System.out.println("Could not open file automatically: " + e.getMessage());
+//        }
+        //TODO PARA Q SE VEA LOS VALORES POR CONSOLA O HAGA UN GRAFICO
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+
+            String line = br.readLine();
+            if (line == null) {
+                System.out.println("Empty signal file.");
+                return;
+            }
+
+            String[] parts = line.split(",");
+            List<Integer> samples = new ArrayList<>();
+
+            for (String p : parts) {
+                if (!p.isBlank())
+                    samples.add(Integer.parseInt(p.trim()));
+            }
+
+            System.out.println("\nRAW SIGNAL VALUES\n");
+            System.out.println(samples);
+
+            printGraph(samples);
+
+
         } catch (Exception e) {
-            System.out.println("Could not open file automatically: " + e.getMessage());
+            System.out.println("Error reading downloaded file: " + e.getMessage());
+        }
+
+
+    }
+
+    private void printGraph(List<Integer> values) {
+
+        int max = values.stream().max(Integer::compareTo).orElse(1);
+        int min = values.stream().min(Integer::compareTo).orElse(0);
+        int height = 20;
+
+        // Escala
+        double scale = (double)(max - min) / height;
+
+        for (int row = height; row >= 0; row--) {
+            double threshold = min + row * scale;
+
+            StringBuilder line = new StringBuilder();
+
+            for (int v : values) {
+                if (v >= threshold)
+                    line.append("*");
+                else
+                    line.append(" ");
+            }
+
+            System.out.println(line.toString());
         }
     }
+
 
 
 
