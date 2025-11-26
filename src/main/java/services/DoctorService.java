@@ -53,7 +53,7 @@ public class DoctorService {
 
     public String getPatientSignals(DoctorConnection conn, int doctorId, int clientId) {
 
-        conn.sendCommand("GET_PATIENT_SIGNALS|" + clientId);
+        conn.sendCommand("GET_PATIENT_SIGNALS_DOCTOR|" + doctorId + "|" + clientId);
         String response = conn.receiveResponse();
         return response == null ? "No response." : response;
     }
