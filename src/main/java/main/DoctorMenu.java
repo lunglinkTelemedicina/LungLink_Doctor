@@ -87,7 +87,7 @@ public class DoctorMenu {
     private void viewHistory() {
         viewPatients();
         int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
-        String result = service.getPatientHistory(conn, clientId);
+        String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
         System.out.println(result);
     }
 
@@ -102,7 +102,7 @@ public class DoctorMenu {
 
         viewPatients();
         int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
-        String result = service.getPatientSignals(conn, clientId);
+        String result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
         System.out.println(result);
 
         int signalId = UIUtils.readInt("\nEnter SIGNAL_ID to download/open: ");
@@ -129,7 +129,7 @@ public class DoctorMenu {
 
         viewPatients();
         int clientId = UIUtils.readInt("\nEnter patient ID to observe: ");
-        List<Integer> recordIds = service.getRecordIdsOfPatient(conn, clientId);
+        List<Integer> recordIds = service.getRecordIdsOfPatient(conn, doctor.getDoctorId(), clientId);
 
         if (recordIds.isEmpty()) {
             System.out.println("This patient has no medical history.");

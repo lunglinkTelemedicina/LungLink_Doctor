@@ -44,14 +44,14 @@ public class DoctorService {
         return result;
     }
 
-    public String getPatientHistory(DoctorConnection conn, int clientId) {
+    public String getPatientHistory(DoctorConnection conn,int doctorId, int clientId) {
 
-        conn.sendCommand("GET_PATIENT_HISTORY_DOCTOR|" + clientId);
+        conn.sendCommand("GET_PATIENT_HISTORY_DOCTOR|" + doctorId + "|" + clientId);
         String response = conn.receiveResponse();
         return response == null ? "No response." : response;
     }
 
-    public String getPatientSignals(DoctorConnection conn, int clientId) {
+    public String getPatientSignals(DoctorConnection conn, int doctorId, int clientId) {
 
         conn.sendCommand("GET_PATIENT_SIGNALS|" + clientId);
         String response = conn.receiveResponse();
@@ -69,9 +69,9 @@ public class DoctorService {
         }
     }
 
-    public List<Integer> getRecordIdsOfPatient(DoctorConnection conn, int clientId) {
+    public List<Integer> getRecordIdsOfPatient(DoctorConnection conn, int doctorId, int clientId) {
 
-        conn.sendCommand("GET_PATIENT_HISTORY_DOCTOR|" + clientId);
+        conn.sendCommand("GET_PATIENT_HISTORY_DOCTOR|" + doctorId + "|" + clientId);
         String response = conn.receiveResponse();
 
         List<Integer> ids = new ArrayList<>();
@@ -210,9 +210,4 @@ public class DoctorService {
         System.out.println("User login failed: " + response);
         return null;
     }
-
-
-
-
 }
-
