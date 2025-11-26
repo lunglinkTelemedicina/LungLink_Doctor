@@ -127,8 +127,8 @@ public class DoctorService {
 
         System.out.println("Specialty:");
         System.out.println("1. CARDIOLOGIST");
-        System.out.println("2. RHEUMATOLOGIST");
-        System.out.println("3. PNEUMATOLOGIST");
+        System.out.println("2. NEUROPHYSIOLOGIST");
+        System.out.println("3. GENERAL MEDICINE");
 
         int s = UIUtils.readInt("Choose by typing the number: ");
         String specialty;
@@ -137,10 +137,7 @@ public class DoctorService {
                 specialty = "CARDIOLOGIST";
                 break;
             case 2:
-                specialty = "RHEUMATOLOGIST";
-                break;
-            case 3:
-                specialty = "PNEUMATOLOGIST";
+                specialty = "NEUROPHYSIOLOGIST";
                 break;
             default:
                 System.out.println("Invalid option. Defaulting to GENERAL_MEDICINE.");
