@@ -1,6 +1,5 @@
 package main;
 
-
 import network.DoctorConnection;
 import pojos.Client;
 import pojos.Doctor;
