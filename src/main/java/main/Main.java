@@ -16,7 +16,7 @@ public class Main {
 
         boolean connected = false;
         while(!connected){
-            String serverIp = UIUtils.readString("Enter Server IP (for example 10.60.115.142 or localhost): ");
+            String serverIp = UIUtils.readString("Enter Server IP (for example 192.168.1.44 or localhost): ");
 
             System.out.println("Attempting connection to " + serverIp + "...");
             connected = conn.connect(serverIp, 9000);

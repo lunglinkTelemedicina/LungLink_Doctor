@@ -10,7 +10,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DoctorMenu {
 
@@ -92,47 +94,94 @@ public class DoctorMenu {
 //        System.out.println(result);
 //    }
 
-    private void viewHistory() {
+//    private void viewHistory() {
+//
+//        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+//
+//        if (patients.isEmpty()) {
+//            System.out.println("No patients assigned.");
+//            return;
+//        }
+//
+//        while (true) {
+//
+//            System.out.println("\nPATIENT LIST\n");
+//            for (String p : patients) {
+//                String[] f = p.split(";");
+//                System.out.println(
+//                        "ID: " + f[0] +
+//                                " | Name: " + f[1] + " " + f[2] +
+//                                " | DOB: " + f[3] +
+//                                " | Sex: " + f[4] +
+//                                " | Mail: " + f[5]
+//                );
+//            }
+//
+//            int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
+//
+//            String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
+//
+//            if (result.startsWith("ERROR|Patient not assigned")) {//TODO excepcioness
+//                continue;
+//            }
+//            if (result.startsWith("ERROR|No history")) {
+//                System.out.println("This patient has no medical history.");
+//                return;
+//            }
+//
+//            System.out.println(result);
+//            break;
+//        }
+//    }
+private void viewHistory() {
 
-        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+    List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
 
-        if (patients.isEmpty()) {
-            System.out.println("No patients assigned.");
+    if (patients.isEmpty()) {
+        System.out.println("No patients assigned.");
+        return;
+    }
+
+    System.out.println("\nPATIENT LIST\n");
+    for (String p : patients) {
+        String[] f = p.split(";");
+        // Asegúrate de que el código aquí dentro imprime la lista de pacientes
+        System.out.println(
+                "ID: " + f[0] +
+                        " | Name: " + f[1] + " " + f[2] +
+                        " | DOB: " + f[3] +
+                        " | Sex: " + f[4] +
+                        " | Mail: " + f[5]
+        );
+    }
+
+    // --- INICIO DE LA CORRECCIÓN: BUCLE DE VALIDACIÓN DEL CLIENT ID ---
+    String result = "ERROR"; // Inicializamos para entrar en el bucle
+    int clientId = -1;
+
+    while (result.startsWith("ERROR")) {
+
+        clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see (or 0 to cancel): ");
+
+        if (clientId == 0) {
+            System.out.println("History search cancelled. Returning to menu.");
             return;
         }
 
-        while(true){
+        // Llamar al servidor y obtener el historial o el mensaje de error
+        result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
 
-            System.out.println("\nPATIENT LIST\n");
-            for (String p : patients) {
-                String[] f = p.split(";");
-                System.out.println(
-                        "ID: " + f[0] +
-                                " | Name: " + f[1] + " " + f[2] +
-                                " | DOB: " + f[3] +
-                                " | Sex: " + f[4] +
-                                " | Mail: " + f[5]
-                );
-            }
-
-        int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
-
-        String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
-
-        if (result.startsWith("ERROR|Patient not assigned")) {//TODO excepcioness
-            continue;
+        if (result.startsWith("ERROR")) {
+            // Si el resultado es ERROR (ej. "ERROR|Patients not assigned..."),
+            // se imprime el mensaje de error y el bucle while se repite.
+            System.err.println(result);
         }
-        if (result.startsWith("ERROR|No history")) {
-            System.out.println("This patient has no medical history.");
-            return;
-        }
-
-        System.out.println(result);
-        break;
     }
-    }
+    // Loop exits successfully here
 
-
+    // El resultado (historial) se imprime solo si no es un ERROR.
+    System.out.println(result);
+}
 
     private void viewSignals() {
 
@@ -156,34 +205,46 @@ public class DoctorMenu {
             );
         }
 
+        String result = "ERROR";
+        int clientId = -1;
 
-        int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
-        String result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
+        while (result.startsWith("ERROR")) {
 
-        if (result.startsWith("ERROR|Patient not assigned")) {
-            return;
+            clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see (or 0 to cancel): ");
+
+            if (clientId == 0) {
+                System.out.println("Signal search cancelled. Returning to menu.");
+                return;
+            }
+            result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
+
+            if (result.startsWith("ERROR")) {
+                System.err.println(result);
+            } else {
+                System.out.println(result);
+            }
         }
+        int signalId = -1;
+        File f = null;
 
-        if (result.startsWith("ERROR|No signals")) {
-            System.out.println("This patient has no signals recorded.");
-            return;
-        }
+        while (f == null) {
+            signalId = UIUtils.readInt("\nEnter SIGNAL_ID to download/open (or 0 to cancel): ");
 
-        System.out.println(result);
+            if (signalId == 0) {
+                System.out.println("Signal download cancelled. Returning to menu.");
+                return;
+            }
 
-        int signalId = UIUtils.readInt("\nEnter SIGNAL_ID to download/open: ");
+            f = conn.requestSignalFile(signalId,clientId);
 
-        File f = conn.requestSignalFile(signalId, clientId);
-
-        if (f == null) {
-            System.out.println("This signal does not belong to this patient.");
-            return;
+            if (f == null) {
+                System.err.println("ERROR: Signal ID " + signalId + " not found or download failed. Please try a valid ID.");
+            }
         }
 
         System.out.println("File downloaded at: " + f.getAbsolutePath());
 
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-
             String line = br.readLine();
             if (line == null) {
                 System.out.println("Empty signal file.");
@@ -204,13 +265,9 @@ public class DoctorMenu {
             printGraph(samples);
 
 
-
         } catch (Exception e) {
             System.out.println("Error reading downloaded file: " + e.getMessage());
         }
-
-
-
 
     }
 
@@ -221,7 +278,7 @@ public class DoctorMenu {
         int height = 20;
 
         // Escala
-        double scale = (double)(max - min) / height;
+        double scale = (double) (max - min) / height;
 
         for (int row = height; row >= 0; row--) {
             double threshold = min + row * scale;
@@ -239,9 +296,6 @@ public class DoctorMenu {
         }
     }
 
-
-
-
     private void addObservation() {
 
         List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
@@ -250,23 +304,42 @@ public class DoctorMenu {
             System.out.println("No patients assigned.");
             return;
         }
+
         System.out.println("\nPATIENT LIST\n");
+        Set<Integer> validClientIds = new HashSet<>();
+
         for (String p : patients) {
             String[] f = p.split(";");
+            int patientId = Integer.parseInt(f[0]);
+            validClientIds.add(patientId);
 
             System.out.println(
-                    "ID: " + f[0] +
+                    "ID: " + patientId +
                             " | Name: " + f[1] + " " + f[2] +
                             " | DOB: " + f[3] +
                             " | Sex: " + f[4] +
                             " | Mail: " + f[5]
             );
         }
-        int clientId = UIUtils.readInt("\nEnter patient ID to observe: ");
+
+        int clientId = -1;
+        boolean idIsValid = false;
+
+        while (!idIsValid) {
+            clientId = UIUtils.readInt("\nEnter patient ID to observe: ");
+
+            if (validClientIds.contains(clientId)) {
+                idIsValid = true;
+            } else {
+                System.err.println("ERROR: You do not have a client with ID " + clientId + " assigned. Please choose an ID from the list.");
+                // El bucle while continuará.
+            }
+        }
+
         List<Integer> recordIds = service.getRecordIdsOfPatient(conn, doctor.getDoctorId(), clientId);
 
         if (recordIds.isEmpty()) {
-            System.out.println("This patient has no medical history.");
+            System.out.println("Client ID " + clientId + " has no medical history records.");
             return;
         }
 
@@ -275,12 +348,17 @@ public class DoctorMenu {
             System.out.println("RECORD_ID: " + r);
         }
 
-        int recordId = UIUtils.readInt("\nType the RECORD_ID in which you want to make any observation: ");
+        int recordId;
+        while (true) {
+            recordId = UIUtils.readInt("\nType the RECORD_ID in which you want to make any observation: ");
 
-        if (!recordIds.contains(recordId)) {
-            System.out.println("Invalid RECORD_ID.");
-            return;
+            if (recordIds.contains(recordId)) {
+                break;
+            }
+
+            System.err.println("ERROR: Invalid RECORD_ID " + recordId + ". Please choose an ID from the list above.");
         }
+
 
         String observation = UIUtils.readString("Observation to add: ");
         service.addObservation(conn, recordId, observation);
