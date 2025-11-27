@@ -9,16 +9,21 @@ import utils.UIUtils;
 
 public class Main {
 
-
-
     public static void main(String[] args) {
 
         DoctorConnection conn = new DoctorConnection();
         DoctorService service = new DoctorService();
 
-        if (!conn.connect("localhost", 9000)) {
-            System.out.println("Cannot connect to server.");
-            return;
+        boolean connected = false;
+        while(!connected){
+            String serverIp = UIUtils.readString("Enter Server IP (for example 10.60.115.142 or localhost): ");
+
+            System.out.println("Attempting connection to " + serverIp + "...");
+            connected = conn.connect(serverIp, 9000);
+
+            if (!connected) {
+                System.err.println("ERROR: Could not connect to server at " + serverIp + ". Please re-enter the IP.");
+            }
         }
 
         System.out.println("\nConnected to server.\n");
