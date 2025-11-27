@@ -85,23 +85,65 @@ public class DoctorMenu {
         }
     }
 
+//    private void viewHistory() {
+//        viewPatients();
+//        int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
+//        String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
+//        System.out.println(result);
+//    }
+
     private void viewHistory() {
-        viewPatients();
+
+        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+
+        if (patients.isEmpty()) {
+            System.out.println("No patients assigned.");
+            return;
+        }
+
+        System.out.println("\nPATIENT LIST\n");
+        for (String p : patients) {
+            String[] f = p.split(";");
+            System.out.println(
+                    "ID: " + f[0] +
+                            " | Name: " + f[1] + " " + f[2] +
+                            " | DOB: " + f[3] +
+                            " | Sex: " + f[4] +
+                            " | Mail: " + f[5]
+            );
+        }
+
         int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
+
         String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
         System.out.println(result);
     }
 
-//    private void viewSignals() {
-//        viewPatients();
-//        int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
-//        String result = service.getPatientSignals(conn, clientId);
-//        System.out.println(result);
-//    }
+
 
     private void viewSignals() {
 
-        viewPatients();
+        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+
+        if (patients.isEmpty()) {
+            System.out.println("No patients assigned.");
+            return;
+        }
+
+        System.out.println("\nPATIENT LIST\n");
+        for (String p : patients) {
+            String[] f = p.split(";");
+
+            System.out.println(
+                    "ID: " + f[0] +
+                            " | Name: " + f[1] + " " + f[2] +
+                            " | DOB: " + f[3] +
+                            " | Sex: " + f[4] +
+                            " | Mail: " + f[5]
+            );
+        }
+
+
         int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
         String result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
         System.out.println(result);
@@ -117,12 +159,6 @@ public class DoctorMenu {
 
         System.out.println("File downloaded at: " + f.getAbsolutePath());
 
-//        try { //TODO PARA Q SE ABRA EN EXCEL O EN EDITOR D TEXTO
-//            Desktop.getDesktop().open(f);
-//        } catch (Exception e) {
-//            System.out.println("Could not open file automatically: " + e.getMessage());
-//        }
-        //TODO PARA Q SE VEA LOS VALORES POR CONSOLA O HAGA UN GRAFICO
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
 
             String line = br.readLine();
@@ -143,11 +179,15 @@ public class DoctorMenu {
             System.out.println(samples);
 
             printGraph(samples);
+            return;
+
 
 
         } catch (Exception e) {
             System.out.println("Error reading downloaded file: " + e.getMessage());
         }
+
+
 
 
     }
@@ -182,7 +222,24 @@ public class DoctorMenu {
 
     private void addObservation() {
 
-        viewPatients();
+        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+
+        if (patients.isEmpty()) {
+            System.out.println("No patients assigned.");
+            return;
+        }
+        System.out.println("\nPATIENT LIST\n");
+        for (String p : patients) {
+            String[] f = p.split(";");
+
+            System.out.println(
+                    "ID: " + f[0] +
+                            " | Name: " + f[1] + " " + f[2] +
+                            " | DOB: " + f[3] +
+                            " | Sex: " + f[4] +
+                            " | Mail: " + f[5]
+            );
+        }
         int clientId = UIUtils.readInt("\nEnter patient ID to observe: ");
         List<Integer> recordIds = service.getRecordIdsOfPatient(conn, doctor.getDoctorId(), clientId);
 
