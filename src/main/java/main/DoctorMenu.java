@@ -101,22 +101,35 @@ public class DoctorMenu {
             return;
         }
 
-        System.out.println("\nPATIENT LIST\n");
-        for (String p : patients) {
-            String[] f = p.split(";");
-            System.out.println(
-                    "ID: " + f[0] +
-                            " | Name: " + f[1] + " " + f[2] +
-                            " | DOB: " + f[3] +
-                            " | Sex: " + f[4] +
-                            " | Mail: " + f[5]
-            );
-        }
+        while(true){
+
+            System.out.println("\nPATIENT LIST\n");
+            for (String p : patients) {
+                String[] f = p.split(";");
+                System.out.println(
+                        "ID: " + f[0] +
+                                " | Name: " + f[1] + " " + f[2] +
+                                " | DOB: " + f[3] +
+                                " | Sex: " + f[4] +
+                                " | Mail: " + f[5]
+                );
+            }
 
         int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
 
         String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
+
+        if (result.startsWith("ERROR|Patient not assigned")) {//TODO excepcioness
+            continue;
+        }
+        if (result.startsWith("ERROR|No history")) {
+            System.out.println("This patient has no medical history.");
+            return;
+        }
+
         System.out.println(result);
+        break;
+    }
     }
 
 
@@ -146,6 +159,16 @@ public class DoctorMenu {
 
         int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
         String result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
+
+        if (result.startsWith("ERROR|Patient not assigned")) {
+            return;
+        }
+
+        if (result.startsWith("ERROR|No signals")) {
+            System.out.println("This patient has no signals recorded.");
+            return;
+        }
+
         System.out.println(result);
 
         int signalId = UIUtils.readInt("\nEnter SIGNAL_ID to download/open: ");
@@ -179,7 +202,6 @@ public class DoctorMenu {
             System.out.println(samples);
 
             printGraph(samples);
-            return;
 
 
 
