@@ -87,20 +87,19 @@ public class DoctorConnection {
         } catch (IOException ignored) {}
     }
 
-    public File requestSignalFile(int signalId) {
+    public File requestSignalFile(int signalId, int clientId) {
         try {
-            sendCommand("GET_SIGNAL_FILE|" + signalId);
+            sendCommand("GET_SIGNAL_FILE|" + signalId + "|" + clientId);
 
-            String resp = receiveResponse();
-
-            if (!resp.startsWith("OK|SENDING_FILE|")) {
-                System.out.println("Server error: " + resp);
+            String header = receiveResponse();
+            if (header == null || !header.startsWith("OK|SENDING_FILE")) {
                 return null;
             }
 
-            int size = Integer.parseInt(resp.split("\\|")[2]);
+            String[] parts = header.split("\\|");
+            int length = Integer.parseInt(parts[2]);
 
-            byte[] data = receiveBytesSignal(size);
+            byte[] data = receiveBytesSignal(length);
 
             File temp = File.createTempFile("signal_", ".csv");
             Files.write(temp.toPath(), data);

@@ -173,10 +173,10 @@ public class DoctorMenu {
 
         int signalId = UIUtils.readInt("\nEnter SIGNAL_ID to download/open: ");
 
-        File f = conn.requestSignalFile(signalId);
+        File f = conn.requestSignalFile(signalId, clientId);
 
         if (f == null) {
-            System.out.println("Could not download file.");
+            System.out.println("This signal does not belong to this patient.");
             return;
         }
 
