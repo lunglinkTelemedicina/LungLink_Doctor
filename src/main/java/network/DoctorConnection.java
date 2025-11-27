@@ -98,9 +98,9 @@ public class DoctorConnection {
                 return null;
             }
 
-            //int size = Integer.parseInt(resp.split("\\|")[2]);
+            int size = Integer.parseInt(resp.split("\\|")[2]);
 
-            byte[] data = receiveBytesSignal();
+            byte[] data = receiveBytesSignal(size);
 
             File temp = File.createTempFile("signal_", ".csv");
             Files.write(temp.toPath(), data);
@@ -134,21 +134,17 @@ public class DoctorConnection {
 //        }
 //    }
 
-
-    public byte[] receiveBytesSignal() {
+    public byte[] receiveBytesSignal(int size) {
         try {
-            int realSize = dataIn.readInt();
-            byte[] buffer = new byte[realSize];
-            dataIn.readFully(buffer);
+            byte[] buffer = new byte[size];
+            dataIn.readFully(buffer);   // <-- ESTA ES LA CLAVE
             return buffer;
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error receiving bytes: " + e.getMessage());
             return null;
         }
     }
-
-
 
 
 }
