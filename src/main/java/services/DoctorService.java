@@ -125,31 +125,35 @@ public class DoctorService {
         String surname = UIUtils.readString("Surname: ");
         String email = UIUtils.readString("Email: ");
 
-        System.out.println("Specialty:");
-        System.out.println("1. CARDIOLOGIST");
-        System.out.println("2. NEUROPHYSIOLOGIST");
-        System.out.println("3. GENERAL MEDICINE");
+        DoctorSpecialty specialty = null;
+        while (specialty == null) {
+            System.out.println("Specialty:");
+            System.out.println("1. CARDIOLOGIST");
+            System.out.println("2. NEUROPHYSIOLOGIST");
+            System.out.println("3. GENERAL MEDICINE");
 
-        int s = UIUtils.readInt("Choose by typing the number: ");
-        String specialty;
-        switch (s) {
-            case 1:
-                specialty = "CARDIOLOGIST";
-                break;
-            case 2:
-                specialty = "NEUROPHYSIOLOGIST";
-                break;
-            default:
-                System.out.println("Invalid option. Defaulting to GENERAL_MEDICINE.");
-                specialty = "GENERAL_MEDICINE";
-                break;
-        };
+            int s = UIUtils.readInt("Choose by typing the number: ");
+            switch (s) {
+                case 1:
+                    specialty = DoctorSpecialty.CARDIOLOGIST;
+                    break;
+                case 2:
+                    specialty = DoctorSpecialty.NEUROPHYSIOLOGIST;
+                    break;
+                case 3:
+                    specialty = DoctorSpecialty.GENERAL_MEDICINE;
+                default:
+                    System.out.println("\nInvalid option: Please try again: ");
+                    break;
+            };
+        }
+
 
         String cmd = "CREATE_DOCTOR|" +
                 user.getId() + "|" +
                 name + "|" +
                 surname + "|" +
-                specialty + "|" +
+                specialty.name() + "|" +
                 email;
 
         conn.sendCommand(cmd);
@@ -169,7 +173,7 @@ public class DoctorService {
                 d.setName(name);
                 d.setSurname(surname);
                 d.setEmail(email);
-                d.setSpecialty(DoctorSpecialty.valueOf(specialty));
+                d.setSpecialty(specialty);
                 d.setUserId(user.getId());
 
                 System.out.println("Doctor profile created. ID = " + doctorId);
