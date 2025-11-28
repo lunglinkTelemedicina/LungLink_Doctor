@@ -123,7 +123,19 @@ public class DoctorService {
 
         String name = UIUtils.readString("Name: ");
         String surname = UIUtils.readString("Surname: ");
-        String email = UIUtils.readString("Email: ");
+        String email = null;//UIUtils.readString("Email: ");
+        boolean emailOK = false;
+
+        while (!emailOK) {
+            email = UIUtils.readString("Email: ");
+
+            if (!email.contains("@") || !(email.endsWith(".com") || email.endsWith(".es"))) {
+                System.out.println("ERROR: Invalid email. It must contain '@' and end with .com or .es.");
+                continue;
+            }
+
+            emailOK = true;
+        }
 
         DoctorSpecialty specialty = null;
         while (specialty == null) {
