@@ -99,19 +99,17 @@ private void viewHistory() {
 
     System.out.println("\nPATIENT LIST\n");
     for (String p : patients) {
+        if(p == null || p.isBlank()) continue; //avoid blank prints
+
         String[] f = p.split(";");
-        // Asegúrate de que el código aquí dentro imprime la lista de pacientes
-        System.out.println(
-                "ID: " + f[0] +
+        System.out.println("ID: " + f[0] +
                         " | Name: " + f[1] + " " + f[2] +
                         " | DOB: " + f[3] +
                         " | Sex: " + f[4] +
-                        " | Mail: " + f[5]
-        );
+                        " | Mail: " + f[5]);
     }
 
     // ask again until the doctor chooses a valid assigned patient
-
     String result = "ERROR"; // Initialize to enter the loop
     int clientId = -1;
 
@@ -148,8 +146,9 @@ private void viewHistory() {
 
         System.out.println("\nPATIENT LIST\n");
         for (String p : patients) {
-            String[] f = p.split(";");
+            if (p == null || p.isBlank()) continue;
 
+            String[] f = p.split(";");
             System.out.println(
                     "ID: " + f[0] +
                             " | Name: " + f[1] + " " + f[2] +
@@ -175,7 +174,7 @@ private void viewHistory() {
             if (result.startsWith("ERROR")) {
                 System.err.println(result);
             } else {
-                System.out.println(result);
+                System.out.println(result);  //prints signals list
             }
         }
         int signalId = -1;
@@ -200,6 +199,7 @@ private void viewHistory() {
 
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line = br.readLine();
+
             if (line == null) {
                 System.out.println("Empty signal file.");
                 return;
@@ -208,9 +208,26 @@ private void viewHistory() {
             String[] parts = line.split(",");
             List<Integer> samples = new ArrayList<>();
 
+            if(parts.length == 0 || (parts.length == 1 && parts[0].isEmpty())) {
+                System.out.println("Signal file contains no samples.");
+                return;
+            }
+
+
+            //when there are corrupt data, this avoids it form shutting down and keep working (extra comas or invalid data)
             for (String p : parts) {
-                if (!p.isBlank())
-                    samples.add(Integer.parseInt(p.trim()));
+                if (!p.isBlank()){
+                    try{
+                        samples.add(Integer.parseInt(p.trim()));
+                    }catch(NumberFormatException e){
+                        System.out.println("Invalid number in CSV -> \"" + p + "\". Skipping it.");
+                    }
+                }
+            }
+
+            if(samples.isEmpty()){
+                System.out.println("No valid sample values found in this signal.");
+                return;
             }
 
             System.out.println("\nRAW SIGNAL VALUES\n");
@@ -227,12 +244,26 @@ private void viewHistory() {
 
     private void printGraph(List<Integer> values) {
 
+        if (values == null || values.isEmpty()) {
+            System.out.println("Cannot draw graph: no signal values.");
+            return;
+        }
+
         int max = values.stream().max(Integer::compareTo).orElse(1);
         int min = values.stream().min(Integer::compareTo).orElse(0);
         int height = 20;
 
+        // Protection: if all the values are the same
+        if (max == min) {
+            System.out.println("\nSignal graph (flat line):\n");
+            System.out.println("*".repeat(values.size()));
+            return;
+        }
+
         // Escala
         double scale = (double) (max - min) / height;
+
+        System.out.println("\nSIGNAL GRAPH\n");
 
         for (int row = height; row >= 0; row--) {
             double threshold = min + row * scale;

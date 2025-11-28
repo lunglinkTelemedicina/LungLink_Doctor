@@ -112,7 +112,6 @@ public class DoctorConnection {
         }
     }
 
-
     public byte[] receiveBytesSignal(int size) {
         try {
             byte[] buffer = new byte[size];
@@ -124,6 +123,4 @@ public class DoctorConnection {
             return null;
         }
     }
-
-
 }

@@ -110,11 +110,7 @@ public class Main {
             return;
         }
 
-
-
         DoctorMenu menu = new DoctorMenu(conn, doctor);
         menu.displayMenu();
     }
-
-
 }
