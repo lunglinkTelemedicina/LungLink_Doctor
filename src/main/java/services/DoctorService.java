@@ -130,7 +130,7 @@ public class DoctorService {
             email = UIUtils.readString("Email: ");
 
             if (!email.contains("@") || !(email.endsWith(".com") || email.endsWith(".es"))) {
-                System.out.println("ERROR: Invalid email. It must contain '@' and end with .com or .es.");
+                System.out.println("ERROR: Invalid email. Please enter a valid address");
                 continue;
             }
 
@@ -155,7 +155,7 @@ public class DoctorService {
                 case 3:
                     specialty = DoctorSpecialty.GENERAL_MEDICINE;
                 default:
-                    System.out.println("\nInvalid option: Please try again: ");
+                    System.out.println("\nInvalid option. Please try again. \n");
                     break;
             };
         }
