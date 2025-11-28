@@ -29,12 +29,16 @@ public class ReceiveDataViaNetwork {
 
     public byte[] receiveBytes() throws IOException {
         int length = dataInputStream.readInt();
+
+        if (length <= 0) {
+            System.err.println("Received invalid byte length: " + length);
+            return null;
+        }
+
         byte[] buffer = new byte[length];
         dataInputStream.readFully(buffer); // block till all bytes arrive
         return buffer;
     }
-
-
 
     public void releaseResources() {
         try {
