@@ -87,52 +87,7 @@ public class DoctorMenu {
         }
     }
 
-//    private void viewHistory() {
-//        viewPatients();
-//        int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
-//        String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
-//        System.out.println(result);
-//    }
 
-//    private void viewHistory() {
-//
-//        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
-//
-//        if (patients.isEmpty()) {
-//            System.out.println("No patients assigned.");
-//            return;
-//        }
-//
-//        while (true) {
-//
-//            System.out.println("\nPATIENT LIST\n");
-//            for (String p : patients) {
-//                String[] f = p.split(";");
-//                System.out.println(
-//                        "ID: " + f[0] +
-//                                " | Name: " + f[1] + " " + f[2] +
-//                                " | DOB: " + f[3] +
-//                                " | Sex: " + f[4] +
-//                                " | Mail: " + f[5]
-//                );
-//            }
-//
-//            int clientId = UIUtils.readInt("\nEnter the ID of the patient you want to see: ");
-//
-//            String result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
-//
-//            if (result.startsWith("ERROR|Patient not assigned")) {//TODO excepcioness
-//                continue;
-//            }
-//            if (result.startsWith("ERROR|No history")) {
-//                System.out.println("This patient has no medical history.");
-//                return;
-//            }
-//
-//            System.out.println(result);
-//            break;
-//        }
-//    }
 private void viewHistory() {
 
     List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
@@ -155,8 +110,9 @@ private void viewHistory() {
         );
     }
 
-    // --- INICIO DE LA CORRECCIÓN: BUCLE DE VALIDACIÓN DEL CLIENT ID ---
-    String result = "ERROR"; // Inicializamos para entrar en el bucle
+    // ask again until the doctor chooses a valid assigned patient
+
+    String result = "ERROR"; // Initialize to enter the loop
     int clientId = -1;
 
     while (result.startsWith("ERROR")) {
@@ -168,18 +124,16 @@ private void viewHistory() {
             return;
         }
 
-        // Llamar al servidor y obtener el historial o el mensaje de error
+        //call the server and gets the history or error
         result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
 
         if (result.startsWith("ERROR")) {
-            // Si el resultado es ERROR (ej. "ERROR|Patients not assigned..."),
-            // se imprime el mensaje de error y el bucle while se repite.
             System.err.println(result);
         }
     }
     // Loop exits successfully here
 
-    // El resultado (historial) se imprime solo si no es un ERROR.
+    //The result (patients history) prints if it's not an error
     System.out.println(result);
 }
 

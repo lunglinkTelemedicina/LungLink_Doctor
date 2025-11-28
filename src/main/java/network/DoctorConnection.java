@@ -112,26 +112,6 @@ public class DoctorConnection {
         }
     }
 
-//    public byte[] receiveBytesSignal(int size) {
-//        try {
-//            byte[] buffer = new byte[size];
-//            int totalRead = 0;
-//
-//            while (totalRead < size) {
-//                int bytesRead = dataIn.read(buffer, totalRead, size - totalRead);
-//                if (bytesRead == -1) {
-//                    throw new IOException("Connection closed while receiving file bytes");
-//                }
-//                totalRead += bytesRead;
-//            }
-//
-//            return buffer;
-//
-//        } catch (Exception e) {
-//            System.out.println("Error receiving bytes: " + e.getMessage());
-//            return null;
-//        }
-//    }
 
     public byte[] receiveBytesSignal(int size) {
         try {
