@@ -126,10 +126,9 @@ private void viewHistory() {
         result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
 
         if (result.startsWith("ERROR")) {
-            System.err.println(result);
+            System.out.println(result);
         }
     }
-    // Loop exits successfully here
 
     //The result (patients history) prints if it's not an error
     System.out.println(result);
@@ -172,7 +171,7 @@ private void viewHistory() {
             result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
 
             if (result.startsWith("ERROR")) {
-                System.err.println(result);
+                System.out.println(result);
             } else {
                 System.out.println(result);  //prints signals list
             }
@@ -191,7 +190,7 @@ private void viewHistory() {
             f = conn.requestSignalFile(signalId,clientId);
 
             if (f == null) {
-                System.err.println("ERROR: Signal ID " + signalId + " not found or download failed. Please try a valid ID.");
+                System.out.println("ERROR: Signal ID " + signalId + " not found or download failed. Please try a valid ID.");
             }
         }
 
@@ -316,8 +315,7 @@ private void viewHistory() {
             if (validClientIds.contains(clientId)) {
                 idIsValid = true;
             } else {
-                System.err.println("ERROR: You do not have a client with ID " + clientId + " assigned. Please choose an ID from the list.");
-                // El bucle while continuará.
+                System.out.println("ERROR: You do not have a client with ID " + clientId + " assigned. Please choose an ID from the list.");
             }
         }
 
@@ -341,7 +339,7 @@ private void viewHistory() {
                 break;
             }
 
-            System.err.println("ERROR: Invalid RECORD_ID " + recordId + ". Please choose an ID from the list above.");
+            System.out.println("ERROR: Invalid RECORD_ID " + recordId + ". Please choose an ID from the list above.");
         }
 
 
