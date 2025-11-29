@@ -2,6 +2,7 @@ package main;
 
 import network.DoctorConnection;
 import pojos.Doctor;
+import pojos.TypeSignal;
 import services.DoctorService;
 import utils.UIUtils;
 
@@ -193,6 +194,7 @@ private void viewHistory() {
         // choose the signal of the patient
         int signalId = -1;
         File f = null;
+        TypeSignal typeEnum = null;
 
         while (f == null) {
             signalId = UIUtils.readInt("\nEnter SIGNAL_ID to download/open (or 0 to cancel): ");
@@ -212,22 +214,24 @@ private void viewHistory() {
 
         System.out.println("File downloaded at: " + f.getAbsolutePath());
 
-
-        // which type of signal is it -- change to enum
-        String signalType = "UNKNOWN";
-
         String[] lines = result.split("\n");
         for (String line : lines) {
-            if (line.contains("SIGNAL_ID: " + signalId)) {
-                // Ejemplo: SIGNAL_ID: 5 | TYPE: EMG | ...
-                String[] metadata = line.split("\\|");
-                for (String m : metadata) {
+            if (line.contains("SIGNAL_ID: " + signalId))
+                continue;
+
+                String[] parts2 = line.split("\\|");
+                for (String m : parts2) {
                     m = m.trim();
                     if (m.startsWith("TYPE:")) {
-                        signalType = m.substring(5).trim();
+                        String raw = m.substring("TYPE:".length()).trim();
+                        try {
+                            typeEnum = TypeSignal.valueOf(raw);
+                        } catch (Exception e) {
+                            System.out.println("ERROR: No puedo convertir '" + raw + "' a TypeSignal");
+                        }
                     }
                 }
-            }
+
         }
 
 
@@ -286,14 +290,14 @@ private void viewHistory() {
         // title for png
         String title =
                 "Signal " + signalId +
-                        " | " + signalType +
+                        " | " + typeEnum +
                         " | Patient: " + patientName + " " + patientSurname +
                         " (ID " + clientId + ")";
 
 
         // generate png
         try {
-            File png = generatePngGraph(samples, title, signalType);
+            File png = generatePngGraph(samples, title, typeEnum);
             System.out.println("PNG generated at: " + png.getAbsolutePath());
             Desktop.getDesktop().open(png);
 
@@ -302,45 +306,6 @@ private void viewHistory() {
         }
     }
 
-
-//    private void printGraph(List<Integer> values) {
-//
-//        if (values == null || values.isEmpty()) {
-//            System.out.println("Cannot draw graph: no signal values.");
-//            return;
-//        }
-//
-//        int max = values.stream().max(Integer::compareTo).orElse(1);
-//        int min = values.stream().min(Integer::compareTo).orElse(0);
-//        int height = 20;
-//
-//        // Protection: if all the values are the same
-//        if (max == min) {
-//            System.out.println("\nSignal graph (flat line):\n");
-//            System.out.println("*".repeat(values.size()));
-//            return;
-//        }
-//
-//        // Escala
-//        double scale = (double) (max - min) / height;
-//
-//        System.out.println("\nSIGNAL GRAPH\n");
-//
-//        for (int row = height; row >= 0; row--) {
-//            double threshold = min + row * scale;
-//
-//            StringBuilder line = new StringBuilder();
-//
-//            for (int v : values) {
-//                if (v >= threshold)
-//                    line.append("*");
-//                else
-//                    line.append(" ");
-//            }
-//
-//            System.out.println(line.toString());
-//        }
-//    }
 
     private void addObservation() {
 
@@ -411,7 +376,7 @@ private void viewHistory() {
         System.out.println("Observation added successfully.");
     }
 
-    private File generatePngGraph(List<Integer> values, String title, String signalType) throws IOException {
+    private File generatePngGraph(List<Integer> values, String title, TypeSignal typeEnum) throws IOException {
 
         int width = 900;
         int height = 500;
@@ -450,10 +415,11 @@ private void viewHistory() {
 
 
         // signal color
-        if (signalType.equalsIgnoreCase("ECG"))
-            g.setColor(new Color(0, 150, 0));
+        if (typeEnum == TypeSignal.ECG)
+            g.setColor(new Color(0,200,0));
         else
-            g.setColor(Color.RED);
+            g.setColor(new Color(220,0,0));
+
 
 
         // plot signal

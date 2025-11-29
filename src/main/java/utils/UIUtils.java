@@ -1,5 +1,7 @@
 package utils;
 
+import pojos.TypeSignal;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,4 +58,18 @@ public class UIUtils {
             }
         }
     }
+
+    private TypeSignal parseSignalType(String raw) {
+        if (raw == null) return null;
+
+        raw = raw.trim().toUpperCase();
+
+        try {
+            return TypeSignal.valueOf(raw);
+        } catch (Exception e) {
+            System.out.println("WARNING: Cannot parse signal type '" + raw + "'");
+            return null;
+        }
+    }
+
 }
