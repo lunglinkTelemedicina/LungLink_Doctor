@@ -3,7 +3,10 @@ package main;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pojos.TypeSignal;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -28,49 +31,54 @@ public class DoctorMenuTest {
         // Restaurar System.out
         System.setOut(standardOut);
     }
-
-    // Helper para invocar el método privado printGraph
-    private void invokePrintGraph(List<Integer> values) throws Exception {
-        Method method = DoctorMenu.class.getDeclaredMethod("printGraph", List.class);
+    // Helper para invocar el nuevo método privado generatePngGraph mediante reflexión
+    private File invokeGeneratePngGraph(List<Integer> values, String title, TypeSignal type) throws Exception {
+        // Firma del método: private File generatePngGraph(List<Integer> values, String title, TypeSignal typeEnum)
+        Method method = DoctorMenu.class.getDeclaredMethod("generatePngGraph", List.class, String.class, TypeSignal.class);
         method.setAccessible(true);
-        method.invoke(dummyMenu, values);
+        File tempFile = (File) method.invoke(dummyMenu, values, title, type);
+        return tempFile;
     }
 
     @Test
-    void printGraph_FlatLine_PrintsRepeatedAsterisks() throws Exception {
-        // Valores idénticos deben generar una línea plana
-        List<Integer> values = List.of(10, 10, 10, 10, 10);
-        invokePrintGraph(values);
+    void generatePngGraph_ECGValues_CreatesNonEmptyPngFile() throws Exception {
+        // Prueba la creación de un PNG con valores típicos de ECG
+        List<Integer> values = List.of(10, 50, 100, 50, 10);
+        String title = "ECG Test Signal";
 
-        String output = outputStreamCaptor.toString().trim();
-        // Verifica el mensaje específico de línea plana
-        assertTrue(output.contains("Signal graph (flat line):"));
-        // Verifica la línea de 5 asteriscos
-        assertTrue(output.contains("*****"));
+        File resultFile = invokeGeneratePngGraph(values, title, TypeSignal.ECG);
+
+        assertNotNull(resultFile, "Debe devolver un objeto File.");
+        assertTrue(resultFile.exists(), "El archivo PNG debe haber sido creado.");
+        assertTrue(resultFile.length() > 0, "El archivo PNG no debe estar vacío.");
+        assertTrue(resultFile.getName().endsWith(".png"), "El archivo debe ser un PNG.");
     }
 
     @Test
-    void printGraph_EmptyList_PrintsErrorMessage() throws Exception {
+    void generatePngGraph_EMGFlatLine_CreatesNonEmptyPngFile() throws Exception {
+        // Prueba la creación de un PNG con valores planos de EMG
+        List<Integer> values = List.of(20, 20, 20, 20);
+        String title = "EMG Flat Test Signal";
+
+        File resultFile = invokeGeneratePngGraph(values, title, TypeSignal.EMG);
+
+        assertNotNull(resultFile);
+        assertTrue(resultFile.exists());
+        assertTrue(resultFile.length() > 0);
+        assertTrue(resultFile.getName().endsWith(".png"));
+    }
+
+    @Test
+    void generatePngGraph_EmptyList_CreatesNonEmptyPngFile() throws Exception {
+        // Prueba que se crea un archivo PNG incluso con una lista de valores vacía,
+        // ya que la implementación maneja esto asignando un rango por defecto (max=1, min=0).
         List<Integer> values = List.of();
-        invokePrintGraph(values);
+        String title = "Empty Signal";
 
-        String output = outputStreamCaptor.toString().trim();
-        assertTrue(output.contains("Cannot draw graph: no signal values."));
-    }
+        File resultFile = invokeGeneratePngGraph(values, title, TypeSignal.ECG);
 
-    @Test
-    void printGraph_AscendingSignal_PrintsShapeCorrectly() throws Exception {
-        // 0 (Min), 10 (Med), 20 (Max). Altura=20.
-        List<Integer> values = List.of(0, 10, 20);
-        invokePrintGraph(values);
-
-        String output = outputStreamCaptor.toString();
-
-        // Verifica que la salida contenga el patrón básico de la escala
-        assertTrue(output.contains("SIGNAL GRAPH"));
-
-        // Verificar un patrón en una de las líneas, por ejemplo, el pico:
-        // Buscamos una línea con asterisco solo en la última posición (valor 20)
-        assertTrue(output.contains("  *")); // En alguna línea
+        assertNotNull(resultFile);
+        assertTrue(resultFile.exists());
+        assertTrue(resultFile.length() > 0, "El archivo PNG debe ser generado incluso con una lista vacía de muestras.");
     }
 }
