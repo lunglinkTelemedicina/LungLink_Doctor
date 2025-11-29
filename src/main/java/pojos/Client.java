@@ -3,6 +3,10 @@ package pojos;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Represents a client/patient in the medical system.
+ * Contains personal information, medical history, and physical measurements.
+ */
 public class Client {
 
 
@@ -18,10 +22,28 @@ public class Client {
     private int doctorId;
     private int  userId;
 
+    /**
+     * Default constructor for Client.
+     */
     public Client(){
 
     }
 
+    /**
+     * Constructs a fully initialized Client object.
+     *
+     * @param clientId       Unique identifier for the client
+     * @param name           Client's first name
+     * @param surname        Client's last name
+     * @param dob            Client's date of birth
+     * @param mail           Client's email address
+     * @param sex            Client's biological sex
+     * @param medicalHistory List of client's medical history records
+     * @param weight         Client's weight in kilograms
+     * @param height         Client's height in meters
+     * @param doctorId       ID of the assigned doctor
+     * @param userId         Associated user account ID
+     */
     public Client(int clientId, String name, String surname, LocalDate dob, String mail, Sex sex, List<MedicalHistory> medicalHistory, double weight, double height, int doctorId, int userId) {
         this.clientId = clientId;
         this.name = name;
@@ -36,14 +58,35 @@ public class Client {
         this.userId = userId;
     }
 
+    /**
+     * Constructs a Client object with basic information.
+     *
+     * @param clientId Unique identifier for the client
+     * @param name     Client's first name
+     * @param surname  Client's last name
+     * @param dob      Client's date of birth
+     * @param mail     Client's email address
+     * @param sex      Client's biological sex
+     * @param o        Additional object parameter
+     */
     public Client(int clientId, String name, String surname, LocalDate dob, String mail, Sex sex, Object o) {
 
     }
 
+    /**
+     * Gets the client's unique identifier.
+     *
+     * @return The client ID
+     */
     public int getClientId() {
         return clientId;
     }
 
+    /**
+     * Sets the client's unique identifier.
+     *
+     * @param clientId The client ID to set
+     */
     public void setClientId(int clientId) {
         this.clientId = clientId;
     }

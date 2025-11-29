@@ -7,8 +7,20 @@ import services.DoctorService;
 import pojos.User;
 import utils.UIUtils;
 
+/**
+ * Main class for the LungLink Doctor application.
+ * Handles user authentication, doctor profile management, and provides
+ * access to the doctor menu interface.
+ */
 public class Main {
 
+    /**
+     * Entry point of the application. Manages the connection to server,
+     * user authentication, doctor profile creation/loading, and launches
+     * the doctor menu interface.
+     *
+     * @param args Command line arguments (not used)
+     */
     public static void main(String[] args) {
 
         DoctorConnection conn = new DoctorConnection();

@@ -59,6 +59,14 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Parses a string input into a TypeSignal enum value.
+     * The input string is trimmed and converted to uppercase before parsing.
+     * If parsing fails, a warning message is printed to console.
+     *
+     * @param raw The raw string input to be parsed into a TypeSignal
+     * @return TypeSignal enum value if parsing succeeds, null if input is null or parsing fails
+     */
     private TypeSignal parseSignalType(String raw) {
         if (raw == null) return null;
 

@@ -4,11 +4,20 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Handles network data transmission using DataOutputStream over a Socket connection.
+ * Provides methods to send various data types including integers, strings, and byte arrays.
+ */
 public class SendDataViaNetwork {
 
     private DataOutputStream dataOutputStream;
     private Socket socket;
 
+    /**
+     * Initializes a new SendDataViaNetwork instance with the specified socket.
+     *
+     * @param socket The network socket to use for data transmission
+     */
     public SendDataViaNetwork(Socket socket) {
         try {
             this.socket = socket;
@@ -19,11 +28,22 @@ public class SendDataViaNetwork {
         }
     }
 
+    /**
+     * Sends an integer value over the network connection.
+     *
+     * @param value The integer to send
+     * @throws IOException If an I/O error occurs during transmission
+     */
     public void sendInt(int value) throws IOException {
         dataOutputStream.writeInt(value);
         dataOutputStream.flush();
     }
 
+    /**
+     * Sends a string message over the network connection.
+     *
+     * @param message The string to send
+     */
     public void sendString(String message) {
         try {
             dataOutputStream.writeUTF(message);
@@ -33,6 +53,13 @@ public class SendDataViaNetwork {
         }
     }
 
+    /**
+     * Sends a byte array over the network connection.
+     * Transmits the array length followed by the actual data.
+     *
+     * @param data The byte array to send
+     * @throws IOException If an I/O error occurs during transmission
+     */
     public void sendBytes(byte[] data) throws IOException {
         dataOutputStream.writeInt(data.length);
         dataOutputStream.write(data);
@@ -40,6 +67,10 @@ public class SendDataViaNetwork {
 
     }
 
+    /**
+     * Closes and releases all network resources.
+     * Handles IOException internally and prints stack trace if error occurs.
+     */
     public void releaseResources() {
         try {
             if (dataOutputStream != null) {
@@ -53,6 +84,12 @@ public class SendDataViaNetwork {
             ex.printStackTrace();
         }
     }
+
+    /**
+     * Closes the data output stream and socket connection.
+     *
+     * @throws IOException If an error occurs while closing the resources
+     */
     public void close() throws IOException {
         if (dataOutputStream != null) dataOutputStream.close();
         if (socket != null) socket.close();

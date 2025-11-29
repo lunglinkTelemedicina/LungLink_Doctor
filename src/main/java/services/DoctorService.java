@@ -4,12 +4,23 @@ import network.DoctorConnection;
 import utils.UIUtils;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class for handling doctor-related operations including authentication,
+ * profile management, and patient data access.
+ * Provides methods for doctor registration, login, and accessing patient information.
+ */
 public class DoctorService {
 
+    /**
+     * Retrieves the doctor ID associated with a user ID.
+     *
+     * @param conn   The connection to the server
+     * @param userId The user ID to check
+     * @return The doctor ID if found, -1 if no doctor exists for the user
+     */
     public int getDoctorId(DoctorConnection conn, int userId) {
 
         conn.sendCommand("CHECK_DOCTOR|" + userId);
@@ -24,6 +35,13 @@ public class DoctorService {
         return Integer.parseInt(p[3]);
     }
 
+    /**
+     * Retrieves a list of patients associated with a doctor.
+     *
+     * @param conn     The connection to the server
+     * @param doctorId The ID of the doctor
+     * @return List of patient information strings, empty list if no patients found
+     */
     public List<String> getDoctorPatients(DoctorConnection conn, int doctorId) {
 
         conn.sendCommand("GET_DOCTOR_PATIENTS|" + doctorId);
@@ -44,6 +62,14 @@ public class DoctorService {
         return result;
     }
 
+    /**
+     * Retrieves the medical history of a specific patient.
+     *
+     * @param conn     The connection to the server
+     * @param doctorId The ID of the requesting doctor
+     * @param clientId The ID of the patient
+     * @return Patient history as a string, "No response." if server doesn't respond
+     */
     public String getPatientHistory(DoctorConnection conn,int doctorId, int clientId) {
 
         conn.sendCommand("GET_PATIENT_HISTORY_DOCTOR|" + doctorId + "|" + clientId);
@@ -51,6 +77,14 @@ public class DoctorService {
         return response == null ? "No response." : response;
     }
 
+    /**
+     * Retrieves the medical signals data for a specific patient.
+     *
+     * @param conn     The connection to the server
+     * @param doctorId The ID of the requesting doctor
+     * @param clientId The ID of the patient
+     * @return Patient signals data as a string, "No response." if server doesn't respond
+     */
     public String getPatientSignals(DoctorConnection conn, int doctorId, int clientId) {
 
         conn.sendCommand("GET_PATIENT_SIGNALS_DOCTOR|" + doctorId + "|" + clientId);
@@ -59,6 +93,13 @@ public class DoctorService {
     }
 
 
+    /**
+     * Adds a medical observation to a patient record.
+     *
+     * @param conn     The connection to the server
+     * @param recordId The ID of the medical record
+     * @param note     The observation text to add
+     */
     public void addObservation(DoctorConnection conn, int recordId, String note) {
 
         conn.sendCommand("ADD_OBSERVATIONS|" + recordId + "|" + note);
@@ -69,6 +110,14 @@ public class DoctorService {
         }
     }
 
+    /**
+     * Retrieves all record IDs associated with a specific patient.
+     *
+     * @param conn     The connection to the server
+     * @param doctorId The ID of the requesting doctor
+     * @param clientId The ID of the patient
+     * @return List of record IDs, empty list if no records found
+     */
     public List<Integer> getRecordIdsOfPatient(DoctorConnection conn, int doctorId, int clientId) {
 
         conn.sendCommand("GET_PATIENT_HISTORY_DOCTOR|" + doctorId + "|" + clientId);
@@ -93,6 +142,12 @@ public class DoctorService {
         return ids;
     }
 
+    /**
+     * Registers a new user in the system.
+     *
+     * @param conn The connection to the server
+     * @return The created User object if successful, null if registration fails
+     */
     public User registerUser(DoctorConnection conn) {
         System.out.println("\nREGISTER USER");
 
@@ -118,6 +173,14 @@ public class DoctorService {
         return null;
     }
 
+    /**
+     * Creates a doctor profile for an existing user.
+     *
+     * @param user The user to create the doctor profile for
+     * @param conn The connection to the server
+     * @return The created Doctor object
+     * @throws IOException If there's an error during profile creation or server communication
+     */
     public Doctor createDoctorForUser(User user, DoctorConnection conn) throws IOException {
         System.out.println("\nCREATE DOCTOR PROFILE");
 
@@ -198,6 +261,12 @@ public class DoctorService {
         throw new IOException("Error creating profile:" + response);
     }
 
+    /**
+     * Authenticates a user in the system.
+     *
+     * @param conn The connection to the server
+     * @return The authenticated User object if successful, null if login fails
+     */
     public User loginUser(DoctorConnection conn) {
         System.out.println("\nLOGIN USER");
 

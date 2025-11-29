@@ -22,18 +22,34 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 
+/**
+ * Handles the doctor's menu interface and operations in the LungLink system.
+ * Provides functionality for viewing patients, medical histories, signals,
+ * and adding observations to patient records.
+ */
 public class DoctorMenu {
 
     private final DoctorConnection connection;
     private final DoctorService service;
     private final Doctor doctor;
 
+    /**
+     * Creates a new DoctorMenu instance.
+     *
+     * @param conn   The connection to the server for doctor operations
+     * @param doctor The doctor object containing the logged-in doctor's information
+     */
     public DoctorMenu(DoctorConnection conn, Doctor doctor) {
         this.connection = conn;
         this.service = new DoctorService();
         this.doctor = doctor;
     }
 
+    /**
+     * Displays and handles the main menu for doctor operations.
+     * Provides options for viewing patients, histories, signals,
+     * and adding observations until the doctor chooses to disconnect.
+     */
     public void displayMenu() {
 
         boolean exit = false;
@@ -71,6 +87,10 @@ public class DoctorMenu {
         }
     }
 
+    /**
+     * Displays a list of all patients assigned to the current doctor.
+     * Shows patient ID, name, date of birth, sex and email for each patient.
+     */
     private void viewPatients() {
 
         List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
@@ -96,7 +116,12 @@ public class DoctorMenu {
     }
 
 
-private void viewHistory() {
+    /**
+     * Displays the medical history for a selected patient.
+     * Allows the doctor to choose a patient from their assigned list
+     * and view their complete medical history records.
+     */
+    private void viewHistory() {
 
     List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
 
@@ -143,6 +168,11 @@ private void viewHistory() {
 }
 
 
+    /**
+     * Displays and visualizes signal data for a selected patient.
+     * Allows downloading signal files, generates PNG graphs of the signals,
+     * and opens them for viewing. Supports ECG and EMG signal types.
+     */
     private void viewSignals() {
 
         List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
@@ -306,6 +336,11 @@ private void viewHistory() {
     }
 
 
+    /**
+     * Adds a medical observation to a patient's record.
+     * Allows selecting a patient and their specific medical record
+     * to add a new observation entry.
+     */
     private void addObservation() {
 
         List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
@@ -375,6 +410,15 @@ private void viewHistory() {
         System.out.println("Observation added successfully.");
     }
 
+    /**
+     * Generates a PNG graph visualization of signal data.
+     *
+     * @param values   List of signal sample values to plot
+     * @param title    The title to display on the graph
+     * @param typeEnum The type of signal (ECG or EMG) for color coding
+     * @return File object containing the generated PNG image
+     * @throws IOException If there is an error generating or saving the image
+     */
     private File generatePngGraph(List<Integer> values, String title, TypeSignal typeEnum) throws IOException {
 
         int width = 900;
