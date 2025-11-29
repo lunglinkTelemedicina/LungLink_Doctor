@@ -415,9 +415,9 @@ private void viewHistory() {
 
         // signal color
         if (typeEnum == TypeSignal.ECG)
-            g.setColor(new Color(0,200,0));
-        else
             g.setColor(new Color(220,0,0));
+        else
+            g.setColor(new Color(0,80,220));
 
 
 
