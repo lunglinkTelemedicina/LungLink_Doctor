@@ -19,6 +19,7 @@ public class Main {
             String serverIp = UIUtils.readString("Enter Server IP (for example 192.168.1.44 or localhost): ");
 
             //this does not allow connection to server if there is no previous answer
+            // up to here
             if (serverIp.isEmpty()) {
                 System.out.println("ERROR: You must enter a valid IP. It cannot be empty.");
                 continue;
