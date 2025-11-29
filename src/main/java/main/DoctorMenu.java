@@ -5,14 +5,22 @@ import pojos.Doctor;
 import services.DoctorService;
 import utils.UIUtils;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
 
 public class DoctorMenu {
 
@@ -134,6 +142,7 @@ private void viewHistory() {
     System.out.println(result);
 }
 
+
     private void viewSignals() {
 
         List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
@@ -157,6 +166,7 @@ private void viewHistory() {
             );
         }
 
+        //choose patient
         String result = "ERROR";
         int clientId = -1;
 
@@ -168,14 +178,19 @@ private void viewHistory() {
                 System.out.println("Signal search cancelled. Returning to menu.");
                 return;
             }
+
             result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
 
             if (result.startsWith("ERROR")) {
                 System.out.println(result);
             } else {
-                System.out.println(result);  //prints signals list
+                System.out.println("\nAvailable signals for this patient: \n");
+                System.out.println(result);
             }
         }
+
+
+        // choose the signal of the patient
         int signalId = -1;
         File f = null;
 
@@ -187,14 +202,55 @@ private void viewHistory() {
                 return;
             }
 
-            f = conn.requestSignalFile(signalId,clientId);
+            f = conn.requestSignalFile(signalId, clientId);
 
             if (f == null) {
-                System.out.println("ERROR: Signal ID " + signalId + " not found or download failed. Please try a valid ID.");
+                System.out.println("ERROR: Signal ID " + signalId +
+                        " not found or download failed. Please try a valid ID.");
             }
         }
 
         System.out.println("File downloaded at: " + f.getAbsolutePath());
+
+
+        // which type of signal is it -- change to enum
+        String signalType = "UNKNOWN";
+
+        String[] lines = result.split("\n");
+        for (String line : lines) {
+            if (line.contains("SIGNAL_ID: " + signalId)) {
+                // Ejemplo: SIGNAL_ID: 5 | TYPE: EMG | ...
+                String[] metadata = line.split("\\|");
+                for (String m : metadata) {
+                    m = m.trim();
+                    if (m.startsWith("TYPE:")) {
+                        signalType = m.substring(5).trim();
+                    }
+                }
+            }
+        }
+
+
+        // get patient details
+        String patientName = "";
+        String patientSurname = "";
+
+        for (String p : patients) {
+            if (p == null || p.isBlank()) continue;
+
+            String[] f2 = p.split(";");
+            int id = Integer.parseInt(f2[0]);
+
+            if (id == clientId) {
+                patientName = f2[1];
+                patientSurname = f2[2];
+                break;
+            }
+        }
+
+
+        // read file
+        List<Integer> samples = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line = br.readLine();
@@ -205,80 +261,86 @@ private void viewHistory() {
             }
 
             String[] parts = line.split(",");
-            List<Integer> samples = new ArrayList<>();
 
-            if(parts.length == 0 || (parts.length == 1 && parts[0].isEmpty())) {
-                System.out.println("Signal file contains no samples.");
-                return;
-            }
-
-
-            //when there are corrupt data, this avoids it form shutting down and keep working (extra comas or invalid data)
             for (String p : parts) {
-                if (!p.isBlank()){
-                    try{
+                if (!p.isBlank()) {
+                    try {
                         samples.add(Integer.parseInt(p.trim()));
-                    }catch(NumberFormatException e){
-                        System.out.println("Invalid number in CSV -> \"" + p + "\". Skipping it.");
+                    } catch (Exception e) {
+                        System.out.println("Invalid number \"" + p + "\". Skipping.");
                     }
                 }
             }
 
-            if(samples.isEmpty()){
-                System.out.println("No valid sample values found in this signal.");
+            if (samples.isEmpty()) {
+                System.out.println("No valid samples found.");
                 return;
             }
 
-            System.out.println("\nRAW SIGNAL VALUES\n");
-            System.out.println(samples);
-
-            printGraph(samples);
-
-
         } catch (Exception e) {
             System.out.println("Error reading downloaded file: " + e.getMessage());
-        }
-
-    }
-
-    private void printGraph(List<Integer> values) {
-
-        if (values == null || values.isEmpty()) {
-            System.out.println("Cannot draw graph: no signal values.");
             return;
         }
 
-        int max = values.stream().max(Integer::compareTo).orElse(1);
-        int min = values.stream().min(Integer::compareTo).orElse(0);
-        int height = 20;
 
-        // Protection: if all the values are the same
-        if (max == min) {
-            System.out.println("\nSignal graph (flat line):\n");
-            System.out.println("*".repeat(values.size()));
-            return;
-        }
+        // title for png
+        String title =
+                "Signal " + signalId +
+                        " | " + signalType +
+                        " | Patient: " + patientName + " " + patientSurname +
+                        " (ID " + clientId + ")";
 
-        // Escala
-        double scale = (double) (max - min) / height;
 
-        System.out.println("\nSIGNAL GRAPH\n");
+        // generate png
+        try {
+            File png = generatePngGraph(samples, title, signalType);
+            System.out.println("PNG generated at: " + png.getAbsolutePath());
+            Desktop.getDesktop().open(png);
 
-        for (int row = height; row >= 0; row--) {
-            double threshold = min + row * scale;
-
-            StringBuilder line = new StringBuilder();
-
-            for (int v : values) {
-                if (v >= threshold)
-                    line.append("*");
-                else
-                    line.append(" ");
-            }
-
-            System.out.println(line.toString());
+        } catch (Exception e) {
+            System.out.println("Error generating PNG: " + e.getMessage());
         }
     }
+
+
+//    private void printGraph(List<Integer> values) {
+//
+//        if (values == null || values.isEmpty()) {
+//            System.out.println("Cannot draw graph: no signal values.");
+//            return;
+//        }
+//
+//        int max = values.stream().max(Integer::compareTo).orElse(1);
+//        int min = values.stream().min(Integer::compareTo).orElse(0);
+//        int height = 20;
+//
+//        // Protection: if all the values are the same
+//        if (max == min) {
+//            System.out.println("\nSignal graph (flat line):\n");
+//            System.out.println("*".repeat(values.size()));
+//            return;
+//        }
+//
+//        // Escala
+//        double scale = (double) (max - min) / height;
+//
+//        System.out.println("\nSIGNAL GRAPH\n");
+//
+//        for (int row = height; row >= 0; row--) {
+//            double threshold = min + row * scale;
+//
+//            StringBuilder line = new StringBuilder();
+//
+//            for (int v : values) {
+//                if (v >= threshold)
+//                    line.append("*");
+//                else
+//                    line.append(" ");
+//            }
+//
+//            System.out.println(line.toString());
+//        }
+//    }
 
     private void addObservation() {
 
@@ -348,4 +410,73 @@ private void viewHistory() {
 
         System.out.println("Observation added successfully.");
     }
+
+    private File generatePngGraph(List<Integer> values, String title, String signalType) throws IOException {
+
+        int width = 900;
+        int height = 500;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+
+        // fondo
+        g.setColor(new Color(200, 200, 200));
+        g.fillRect(0, 0, width, height);
+
+        // lineas finas
+        g.setColor(new Color(170, 170, 170));
+        for (int x = 0; x < width; x += 10) g.drawLine(x, 0, x, height);
+        for (int y = 0; y < height; y += 10) g.drawLine(0, y, width, y);
+
+        // lineas gruesas
+        g.setColor(new Color(140, 140, 140));
+        for (int x = 0; x < width; x += 50) g.drawLine(x, 0, x, height);
+        for (int y = 0; y < height; y += 50) g.drawLine(0, y, width, y);
+
+
+        // title
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString(title, 40, 30);
+
+
+        // signal
+        int max = values.stream().max(Integer::compareTo).orElse(1);
+        int min = values.stream().min(Integer::compareTo).orElse(0);
+
+        int graphHeight = height - 100;
+        double scaleY = (double) graphHeight / (max - min == 0 ? 1 : max - min);
+        double scaleX = (double) (width - 80) / values.size();
+
+
+        // signal color
+        if (signalType.equalsIgnoreCase("ECG"))
+            g.setColor(new Color(0, 150, 0));
+        else
+            g.setColor(Color.RED);
+
+
+        // plot signal
+        int base = height - 50;
+
+        for (int i = 0; i < values.size() - 1; i++) {
+            int x1 = (int) (40 + i * scaleX);
+            int y1 = (int) (base - (values.get(i) - min) * scaleY);
+
+            int x2 = (int) (40 + (i + 1) * scaleX);
+            int y2 = (int) (base - (values.get(i + 1) - min) * scaleY);
+
+            g.drawLine(x1, y1, x2, y2);
+        }
+
+        g.dispose();
+
+        // temporary png
+        File png = File.createTempFile("signal_", ".png");
+        ImageIO.write(image, "png", png);
+
+        return png;
+    }
+
+
 }
