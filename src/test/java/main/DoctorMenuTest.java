@@ -20,20 +20,20 @@ public class DoctorMenuTest {
 
     @BeforeEach
     public void setUp() {
-        // Capturar System.out
+        // Capture System.out
         System.setOut(new PrintStream(outputStreamCaptor));
-        // Instancia dummy (no necesitamos conexión ni doctor reales)
+        // instance dummy
         dummyMenu = new DoctorMenu(null, null);
     }
 
     @AfterEach
     public void tearDown() {
-        // Restaurar System.out
+        // System.out
         System.setOut(standardOut);
     }
-    // Helper para invocar el nuevo método privado generatePngGraph mediante reflexión
+    // generatePngGraph
     private File invokeGeneratePngGraph(List<Integer> values, String title, TypeSignal type) throws Exception {
-        // Firma del método: private File generatePngGraph(List<Integer> values, String title, TypeSignal typeEnum)
+        // private File generatePngGraph(List<Integer> values, String title, TypeSignal typeEnum)
         Method method = DoctorMenu.class.getDeclaredMethod("generatePngGraph", List.class, String.class, TypeSignal.class);
         method.setAccessible(true);
         File tempFile = (File) method.invoke(dummyMenu, values, title, type);
@@ -42,21 +42,21 @@ public class DoctorMenuTest {
 
     @Test
     void generatePngGraph_ECGValues_CreatesNonEmptyPngFile() throws Exception {
-        // Prueba la creación de un PNG con valores típicos de ECG
+        // Test PNG with typical values of ECG
         List<Integer> values = List.of(10, 50, 100, 50, 10);
         String title = "ECG Test Signal";
 
         File resultFile = invokeGeneratePngGraph(values, title, TypeSignal.ECG);
 
-        assertNotNull(resultFile, "Debe devolver un objeto File.");
-        assertTrue(resultFile.exists(), "El archivo PNG debe haber sido creado.");
-        assertTrue(resultFile.length() > 0, "El archivo PNG no debe estar vacío.");
-        assertTrue(resultFile.getName().endsWith(".png"), "El archivo debe ser un PNG.");
+        assertNotNull(resultFile, "It must return an object file.");
+        assertTrue(resultFile.exists(), "PNG must been created.");
+        assertTrue(resultFile.length() > 0, "PNG cant be null or empty.");
+        assertTrue(resultFile.getName().endsWith(".png"), "The file must be a PNG.");
     }
 
     @Test
     void generatePngGraph_EMGFlatLine_CreatesNonEmptyPngFile() throws Exception {
-        // Prueba la creación de un PNG con valores planos de EMG
+        // Test PNG with typical values of ECG
         List<Integer> values = List.of(20, 20, 20, 20);
         String title = "EMG Flat Test Signal";
 
@@ -70,8 +70,8 @@ public class DoctorMenuTest {
 
     @Test
     void generatePngGraph_EmptyList_CreatesNonEmptyPngFile() throws Exception {
-        // Prueba que se crea un archivo PNG incluso con una lista de valores vacía,
-        // ya que la implementación maneja esto asignando un rango por defecto (max=1, min=0).
+        // Test if a PNG file is created even if its empty
+        // (max=1, min=0).
         List<Integer> values = List.of();
         String title = "Empty Signal";
 
@@ -79,6 +79,6 @@ public class DoctorMenuTest {
 
         assertNotNull(resultFile);
         assertTrue(resultFile.exists());
-        assertTrue(resultFile.length() > 0, "El archivo PNG debe ser generado incluso con una lista vacía de muestras.");
+        assertTrue(resultFile.length() > 0, "PNG file must be created even if its empty.");
     }
 }

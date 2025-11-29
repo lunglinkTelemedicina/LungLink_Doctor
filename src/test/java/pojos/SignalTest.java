@@ -9,8 +9,8 @@ public class SignalTest {
 
     @Test
     void toByteArray_PositiveValues_ConvertsCorrectly() {
-        // Valor 1: 257 (0x0101)
-        // Valor 2: 1024 (0x0400)
+        // Value 1: 257 (0x0101)
+        // Value 2: 1024 (0x0400)
         List<Integer> values = Arrays.asList(257, 1024);
         Signal signal = new Signal();
         signal.setValues(values);
@@ -22,8 +22,8 @@ public class SignalTest {
 
         byte[] actual = signal.toByteArray();
 
-        assertArrayEquals(expected, actual, "La conversión a byte[] debe ser correcta (2 bytes por int, Big-endian).");
-        assertEquals(values.size() * 2, actual.length, "El tamaño del array de bytes debe ser el doble de las muestras.");
+        assertArrayEquals(expected, actual, "byte[] conversion must be correct (2 bytes per int (sample).");
+        assertEquals(values.size() * 2, actual.length, "byte[] size must be twice the sample size.");
     }
 
     @Test

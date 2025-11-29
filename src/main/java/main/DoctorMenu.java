@@ -20,17 +20,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 
 
 public class DoctorMenu {
 
-    private final DoctorConnection conn;
+    private final DoctorConnection connection;
     private final DoctorService service;
     private final Doctor doctor;
 
     public DoctorMenu(DoctorConnection conn, Doctor doctor) {
-        this.conn = conn;
+        this.connection = conn;
         this.service = new DoctorService();
         this.doctor = doctor;
     }
@@ -63,7 +62,7 @@ public class DoctorMenu {
                     addObservation();
                     break;
                 case 5:
-                    conn.disconnect();
+                    connection.disconnect();
                     exit = true;
                     break;
                 default:
@@ -74,7 +73,7 @@ public class DoctorMenu {
 
     private void viewPatients() {
 
-        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+        List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
 
         if (patients.isEmpty()) {
             System.out.println("No patients assigned.");
@@ -99,7 +98,7 @@ public class DoctorMenu {
 
 private void viewHistory() {
 
-    List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+    List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
 
     if (patients.isEmpty()) {
         System.out.println("No patients assigned.");
@@ -132,7 +131,7 @@ private void viewHistory() {
         }
 
         //call the server and gets the history or error
-        result = service.getPatientHistory(conn, doctor.getDoctorId(), clientId);
+        result = service.getPatientHistory(connection, doctor.getDoctorId(), clientId);
 
         if (result.startsWith("ERROR")) {
             System.out.println(result);
@@ -146,7 +145,7 @@ private void viewHistory() {
 
     private void viewSignals() {
 
-        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+        List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
 
         if (patients.isEmpty()) {
             System.out.println("No patients assigned.");
@@ -180,7 +179,7 @@ private void viewHistory() {
                 return;
             }
 
-            result = service.getPatientSignals(conn, doctor.getDoctorId(), clientId);
+            result = service.getPatientSignals(connection, doctor.getDoctorId(), clientId);
 
             if (result.startsWith("ERROR")) {
                 System.out.println(result);
@@ -204,7 +203,7 @@ private void viewHistory() {
                 return;
             }
 
-            f = conn.requestSignalFile(signalId, clientId);
+            f = connection.requestSignalFile(signalId, clientId);
 
             if (f == null) {
                 System.out.println("ERROR: Signal ID " + signalId +
@@ -309,7 +308,7 @@ private void viewHistory() {
 
     private void addObservation() {
 
-        List<String> patients = service.getDoctorPatients(conn, doctor.getDoctorId());
+        List<String> patients = service.getDoctorPatients(connection, doctor.getDoctorId());
 
         if (patients.isEmpty()) {
             System.out.println("No patients assigned.");
@@ -346,7 +345,7 @@ private void viewHistory() {
             }
         }
 
-        List<Integer> recordIds = service.getRecordIdsOfPatient(conn, doctor.getDoctorId(), clientId);
+        List<Integer> recordIds = service.getRecordIdsOfPatient(connection, doctor.getDoctorId(), clientId);
 
         if (recordIds.isEmpty()) {
             System.out.println("Client ID " + clientId + " has no medical history records.");
@@ -371,7 +370,7 @@ private void viewHistory() {
 
 
         String observation = UIUtils.readString("Observation to add: ");
-        service.addObservation(conn, recordId, observation);
+        service.addObservation(connection, recordId, observation);
 
         System.out.println("Observation added successfully.");
     }

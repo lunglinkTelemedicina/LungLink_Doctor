@@ -11,14 +11,14 @@ public class UIUtilsTest {
 
     private final InputStream standardIn = System.in;
 
-    // Método para simular la entrada del usuario (System.in)
+    //(System.in)
     private void setSimulatedInput(String data) {
         System.setIn(new ByteArrayInputStream(data.getBytes()));
     }
 
     @AfterEach
     public void tearDown() {
-        // Restaurar System.in después de cada prueba
+        // System.in
         System.setIn(standardIn);
     }
 
@@ -30,7 +30,7 @@ public class UIUtilsTest {
 
     @Test
     void readInt_InvalidThenValidInput_ReturnsCorrectInt() {
-        // Simula introducir "abc", luego "5". UIUtils maneja el error y vuelve a pedir.
+        // Test "abc", them "5". UIUtils handle the error and ask again.
         setSimulatedInput("abc\n5\n");
         assertEquals(5, UIUtils.readInt("Enter: "));
     }
@@ -44,13 +44,13 @@ public class UIUtilsTest {
     @Test
     void readDouble_ValidInput_ReturnsCorrectDouble() {
         setSimulatedInput("3.1415\n");
-        // Usamos un delta para comparar doubles
+        // Deltas to compare doubles
         assertEquals(3.1415, UIUtils.readDouble("Enter: "), 0.0001);
     }
 
     @Test
     void readDouble_InvalidThenValidInput_ReturnsCorrectDouble() {
-        // Simula introducir "not_a_double", luego "1.23"
+        // Test introduce "not_a_double", then "1.23"
         setSimulatedInput("not_a_double\n1.23\n");
         assertEquals(1.23, UIUtils.readDouble("Enter: "), 0.0001);
     }

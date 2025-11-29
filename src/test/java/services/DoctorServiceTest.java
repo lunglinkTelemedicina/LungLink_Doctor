@@ -31,16 +31,16 @@ public class DoctorServiceTest {
         service = new DoctorService();
     }
 
-    // --- Tests usando Mocking Estático de UIUtils ---
+    // UIUtils
 
     @Test
     void registerUser_Success_ReturnsNewUser() {
         try (MockedStatic<UIUtils> mockedUI = mockStatic(UIUtils.class)) {
-            // Simular entradas estáticas del usuario
+            // test static entries form the user
             mockedUI.when(() -> UIUtils.readString("New username: ")).thenReturn("testUser");
             mockedUI.when(() -> UIUtils.readString("New password: ")).thenReturn("testPass");
 
-            // Simular respuesta OK del servidor
+            // test server response (OK|)
             when(mockConn.receiveResponse()).thenReturn("OK|101");
 
             // Act
@@ -58,19 +58,19 @@ public class DoctorServiceTest {
         User user = new User(10, "uname", "pass");
 
         try (MockedStatic<UIUtils> mockedUI = mockStatic(UIUtils.class)) {
-            // Simular entradas estáticas del usuario
+            // test static entries form the user
             mockedUI.when(() -> UIUtils.readString("Name: ")).thenReturn("Dr");
             mockedUI.when(() -> UIUtils.readString("Surname: ")).thenReturn("Test");
 
-            // Simular validación de email (falla una vez, luego éxito)
+            // test email validation (fail once, then succeed)
             mockedUI.when(() -> UIUtils.readString("Email: "))
                     .thenReturn("invalid_email")
                     .thenReturn("test.doctor@mail.com");
 
-            // Simular elección de especialidad (1: CARDIOLOGIST)
+            // test speciality (1: CARDIOLOGIST)
             mockedUI.when(() -> UIUtils.readInt("Choose by typing the number: ")).thenReturn(1);
 
-            // Simular respuesta OK del servidor
+            // test server response (OK|)
             when(mockConn.receiveResponse()).thenReturn("OK|200");
 
             // Act
@@ -85,11 +85,11 @@ public class DoctorServiceTest {
         }
     }
 
-    // --- Tests usando Mocking de Instancia de DoctorConnection ---
+    // DoctorConnection
 
     @Test
     void getDoctorId_DoctorExists_ReturnsId() {
-        // Respuesta: OK|userId|username|doctorId|name|surname
+        // Response: OK|userId|username|doctorId|name|surname
         when(mockConn.receiveResponse()).thenReturn("OK|1|username|456|name|surname");
 
         int doctorId = service.getDoctorId(mockConn, 1);
@@ -100,7 +100,7 @@ public class DoctorServiceTest {
 
     @Test
     void getDoctorPatients_Success_ReturnsList() {
-        // Respuesta: OK|p1_id;p1_name;...#p2_id;p2_name;...
+        // Response: OK|p1_id;p1_name;...#p2_id;p2_name;...
         String serverResponse = "OK|1;John;Doe;1990-01-01;MALE;john@mail.com#2;Jane;Smith;1995-05-05;FEMALE;jane@mail.com";
         when(mockConn.receiveResponse()).thenReturn(serverResponse);
 
@@ -113,7 +113,7 @@ public class DoctorServiceTest {
 
     @Test
     void getRecordIdsOfPatient_Success_ReturnsIds() {
-        // Respuesta que contiene múltiples RECORD_ID
+        // Response RECORD_ID
         String serverResponse =
                 "RECORD_ID: 101\nDate: 2023-01-01\n" +
                         "RECORD_ID: 102\nDate: 2023-01-15\n" +
@@ -138,7 +138,7 @@ public class DoctorServiceTest {
 
         service.addObservation(mockConn, recordId, note);
 
-        // Verifica que el comando de agregar observación se envió correctamente
+        // Test add observations
         verify(mockConn).sendCommand("ADD_OBSERVATIONS|" + recordId + "|" + note);
     }
 }
