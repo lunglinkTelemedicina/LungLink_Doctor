@@ -6,8 +6,10 @@ LungLink_Doctor IS DESIGNED FOR:
 - Adding medical observations
 - Communicating with the server using TCP command-based protocol
 
-  ## PROJECT STRUCTURE
-  ```
+## PROJECT STRUCTURE
+
+```
+
   src/main/java/
  ├── network/
  │   ├── DoctorConnection.java
@@ -28,10 +30,13 @@ LungLink_Doctor IS DESIGNED FOR:
  └── utils/
      ├── UIUtils.java
      └── DateUtils.java
+
 ```
 
 ## GUIDE
+
 ```
+
 1- Open the project
 2- Run: main.MainDoctor
 3- Introduce the server Ip
@@ -42,7 +47,9 @@ b) View a patients medicalHistory
 c) View a patient`s signal (EMG/ECG) 
 d) Add medical observations
 6- Disconnect
+
 ```
+
 ## AUTHORS
 - Martina Zandio
 - Ana Losada
