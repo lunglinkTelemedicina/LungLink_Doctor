@@ -95,7 +95,4 @@ public class SendDataViaNetwork {
         if (socket != null) socket.close();
     }
 
-    // TODO: SEND MedicalHistory cuando este claro como se guardan las signals
-
-
 }
