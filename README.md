@@ -1,60 +1,39 @@
-LungLink_Doctor IS DESIGNED FOR:
-- Registering or logging as a doctor
-- Viewing assigned patients
-- Viewing each patient´s medicalHistory
-- Viewing signals (ECG/EMG) recieved from clients
-- Adding medical observations
-- Communicating with the server using TCP command-based protocol
+Before cloning the GitHub repository, ensure that the following components are installed:
 
-## PROJECT STRUCTURE
+Required Software
+- Java 21 (JDK 21)
 
-```
+- A Java-compatible IDE (IntelliJ IDEA, Eclipse, etc.)
 
-  src/main/java/
- ├── network/
- │   ├── DoctorConnection.java
- │   ├── DataSender.java
- │   └── DataReceiver.java
+- Windows OS (recommended due to Bluetooth compatibility)
 
- ├── services/
- │   ├── DoctorService.java
- │   └── FileService.java
+Project Dependencies
 
- ├── pojos/
- │   ├── Doctor.java
- │   ├── Patient.java
- │   ├── MedicalHistory.java
- │   ├── Signal.java
- │   └── TypeSignal.java
+- org.xerial:sqlite-jdbc:3.45.1.0 — SQLite JDBC driver
 
- └── utils/
-     ├── UIUtils.java
-     └── DateUtils.java
+- org.slf4j:slf4j-simple:1.7.36 — SLF4J simple logger
 
-```
+If you want to run the project through IntelliJ:
 
-## GUIDE
+- Clone the repository to your local machine.
 
-```
+- Build the project using:
+  mvn clean install
 
-1- Open the project
-2- Run: main.MainDoctor
-3- Introduce the server Ip
-4- Doctor authentication (log in with your username and password or register as a new doctor)
-5- Menu opctions
-a) View list of asssigned patients
-b) View a patients medicalHistory
-c) View a patient`s signal (EMG/ECG) 
-d) Add medical observations
-6- Disconnect
+- Run the Main class.
 
-```
+If you prefer to run it directly from the terminal of your machine:
+
+- Download the executableJar folder located in the LungLink_Doctor directory.
+- Open a terminal and navigate through your directories using cd and ls until you reach the LungLink_Doctor-1.0-SNAPSHOT.jar file.
+- Execute the application with:
+  java -jar executableJar/LungLink_Doctor-1.0-SNAPSHOT.jar
 
 ## AUTHORS
-- Martina Zandio
-- Ana Losada
 - Jimena Aineto
+- Ana Losada
+- Sara Menor
 - Paula Reyero
-- Sara Menor 
+- Martina Zandio
 
-
+  
